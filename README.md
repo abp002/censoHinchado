@@ -1,4 +1,4 @@
-# censo-hinchado
+# censoHinchado
 
 Dos anomalías del censo electoral español, medidas con datos públicos del INE y del
 Ministerio del Interior:

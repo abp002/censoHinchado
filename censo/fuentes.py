@@ -53,7 +53,7 @@ def descarga(url: str, destino: Path, forzar: bool = False) -> Path:
     if destino.exists() and not forzar:
         return destino
     destino.parent.mkdir(parents=True, exist_ok=True)
-    req = urllib.request.Request(url, headers={"User-Agent": "censo-hinchado"})
+    req = urllib.request.Request(url, headers={"User-Agent": "censoHinchado"})
     with urllib.request.urlopen(req, timeout=120) as r:
         destino.write_bytes(r.read())
     return destino

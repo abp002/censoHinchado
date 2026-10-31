@@ -1,4 +1,4 @@
-# censo-hinchado
+# censoHinchado
 
 Anomalías del censo electoral por municipio con datos públicos (INE + Infoelectoral):
 1. **Pueblos**: el censo de residentes (CER) sube para las municipales y cae en las
@@ -49,4 +49,4 @@ su código de Infoelectoral. Las generales con voto exterior van en `GENERALES_I
 
 Nivel: activo. Tests de la lógica (detector, margen, D'Hondt, lectores) en `tests/`.
 
-Issues: pendiente de remoto (proponer `abp002/censo-hinchado`, privado).
+Issues: abp002/censoHinchado

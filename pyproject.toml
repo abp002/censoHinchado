@@ -1,5 +1,5 @@
 [project]
-name = "censo-hinchado"
+name = "censohinchado"
 version = "0.1.0"
 description = "Anomalías del censo electoral por municipio: altas que suben para votar y bajan después, y el censo de residentes en el extranjero"
 requires-python = ">=3.11"
