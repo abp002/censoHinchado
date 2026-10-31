@@ -1,0 +1,8 @@
+STUB="Municipios";
+HEADING="Tipo de elector";
+VALUES("Municipios")="01 001 Alegría-Dulantzi","01 002 Amurrio","Total";
+VALUES("Tipo de elector")="Electores españoles residentes en España","Electores españoles residentes en el extranjero";
+DATA=
+1755 22
+8145 ".."
+9900 125;
