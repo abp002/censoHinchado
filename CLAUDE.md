@@ -13,7 +13,7 @@ Se habla siempre de **anomalías estadísticas**, nunca de fraude.
 ```
 uv run censo descarga   # INE automático; lista lo que falta de Infoelectoral
 uv run censo pueblos    # salidas/pueblos_senalados.csv, pueblos_margen.csv
-uv run censo cera       # salidas/cera_escanos.csv, cera_ola_municipios.csv, cera_margen_*.csv
+uv run censo cera       # salidas/cera_escanos.csv, cera_ola_municipios.csv, cera_margen_2023_vs_g2026.csv
 uv run pytest -q
 ```
 
@@ -21,6 +21,10 @@ uv run pytest -q
 
 - `datos/brutos/ine/`: electores por municipio de cada elección (PX históricos y CSV
   `jaxi/files/tpx/es/csv_bdsc/<id>.csv`) y el PERE (Tempus, tabla 71118). Se bajan solos.
+- `datos/brutos/ine/oce_g2026_listas_provincias.xlsx`: electores CER y CERA por provincia
+  de las listas de votación del 29-N (Oficina del Censo Electoral, censo cerrado el
+  1-8-2026; página `ine.es/dyngs/CEL/index.htm?cid=1703`). Se baja solo. Los "números
+  definitivos" (`elecgen2026_tab*_def.xlsx`) aún daban 404 el 2026-11-02.
 - `datos/brutos/infoelectoral/<código>/`: resultados de Interior. **Interior da 403 a
   curl**: se bajan desde el Chrome de Alejandro con `fetch` dentro de la página de
   Infoelectoral y se pasan a un receptor HTTP en 127.0.0.1. Ficheros:
@@ -42,6 +46,10 @@ su código de Infoelectoral. Las generales con voto exterior van en `GENERALES_I
 - `g2015b` es la PX `p09/a2015_1`; no está claro si es dic-2015 o jun-2016.
 - m2007 → g2008 son 10 meses: mucho más ruido (120 señalados).
 - Falsos positivos: Talarn (academia militar de suboficiales).
+- CERA nuevo del 29-N = CERA de las listas de la OCE − `Censo CERA` de Infoelectoral 2023.
+  Los 163.020 con voto suspendido por el Supremo siguen en las listas y no hay cifra
+  por provincia: se reparten en proporción al CERA ganado (`reparte_suspendidos`) y
+  sale como escenario aparte, no como dato.
 - El voto CERA por partido = provincial − suma de municipios. `efecto_cera` comprueba
   que el D'Hondt reproduce el reparto oficial y falla si no.
 

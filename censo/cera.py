@@ -79,11 +79,21 @@ def votos_para_un_escano(votos: dict[str, int], escanos: int, validos: int | Non
     return out
 
 
-def margen_ultimo_escano(provincias: pd.DataFrame, votos_prov: pd.DataFrame, nuevos_cera: pd.Series) -> pd.DataFrame:
+def reparte_suspendidos(nuevos_cera: pd.Series, total: int) -> pd.Series:
+    """Escenario: los inscritos con el voto suspendido se reparten en proporción al CERA
+    ganado por cada provincia (son altas recientes de la ley de nietos). Las provincias
+    que pierden CERA no reciben ninguno, y nadie pierde más de lo que ganó.
+    """
+    ganado = nuevos_cera.clip(lower=0)
+    return (ganado * min(total / ganado.sum(), 1)).round().astype(int) if ganado.sum() else ganado * 0
+
+
+def margen_ultimo_escano(provincias: pd.DataFrame, votos_prov: pd.DataFrame, nuevos_cera: pd.Series,
+                         suspendidos: pd.Series | None = None) -> pd.DataFrame:
     """Por provincia: votos que le faltaron al partido más cercano para un escaño más,
     frente a los votantes exteriores nuevos que cabe esperar con la participación CERA
     de esa elección. Es un orden de magnitud, no una predicción: el voto del año
-    siguiente será otro.
+    siguiente será otro. Con `suspendidos`, añade el mismo cálculo descontándolos.
     """
     pr = provincias.set_index("prov")
     filas = []
@@ -97,6 +107,11 @@ def margen_ultimo_escano(provincias: pd.DataFrame, votos_prov: pd.DataFrame, nue
                       "partido_mas_cerca": partido, "votos_que_faltan": n,
                       "censo_cera": int(pr.loc[prov, "censo_cera"]), "participacion_cera": round(part, 3),
                       "cera_nuevos": nuevos, "votantes_nuevos_esperados": round(nuevos * part)})
+        if suspendidos is not None:
+            sus = int(suspendidos.get(prov, 0))
+            filas[-1] |= {"suspendidos_estimados": sus, "votantes_nuevos_sin_suspendidos": round((nuevos - sus) * part)}
     d = pd.DataFrame(filas)
     d["veces_el_margen"] = (d.votantes_nuevos_esperados / d.votos_que_faltan).round(2)
+    if suspendidos is not None:
+        d["veces_sin_suspendidos"] = (d.votantes_nuevos_sin_suspendidos / d.votos_que_faltan).round(2)
     return d.sort_values("veces_el_margen", ascending=False)

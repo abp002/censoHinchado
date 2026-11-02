@@ -25,3 +25,13 @@ def test_votos_para_un_escano_basta_y_es_justo():
         assert dhondt(mas, 7)[p] == dhondt(v, 7)[p] + 1          # con n, lo gana
         menos = dict(v, **{p: v[p] + n - 2})
         assert dhondt(menos, 7)[p] == dhondt(v, 7)[p]            # con casi n, todavía no
+
+
+def test_reparte_suspendidos_en_proporcion_a_lo_ganado():
+    import pandas as pd
+    from censo.cera import reparte_suspendidos
+    nuevos = pd.Series({"28": 30_000, "08": 10_000, "49": -500})
+    r = reparte_suspendidos(nuevos, 20_000)
+    assert r["28"] == 15_000 and r["08"] == 5_000 and r["49"] == 0  # quien pierde CERA no recibe
+    tope = reparte_suspendidos(nuevos, 1_000_000)
+    assert (tope <= nuevos.clip(lower=0)).all()  # nadie pierde más de lo que ganó

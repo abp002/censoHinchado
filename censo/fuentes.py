@@ -17,6 +17,13 @@ PX = "https://www.ine.es/jaxi/files/_px/es/px/t44/{}"
 CSV = "https://www.ine.es/jaxi/files/tpx/es/csv_bdsc/{}.csv"
 INFOE = "https://infoelectoral.interior.gob.es/estaticos/docxl/{}.zip"
 PERE = "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/71118?nult=40&tip=AM"
+# Oficina del Censo Electoral: listas de votación (censo cerrado el 1-8-2026) por provincia,
+# electores residentes en España (CER) y en el extranjero (CERA).
+OCE_G2026 = "https://www.ine.es/oficina_censo/elecgen2026/elecgral_2026_lv_tab3.xlsx"
+OCE_G2026_FICHERO = "oce_g2026_listas_provincias.xlsx"
+# Inscritos en el CERA por la ley de nietos cuyo voto suspendió el Supremo (auto de 8-9-2026).
+# No hay cifra oficial por provincia.
+SUSPENDIDOS_G2026 = 163_020
 
 
 @dataclass(frozen=True)
@@ -63,6 +70,7 @@ def descarga_ine(forzar: bool = False) -> None:
     for e in ELECCIONES:
         descarga(e.url, BRUTOS_INE / e.fichero, forzar)
     descarga(PERE, BRUTOS_INE / "pere_71118.json", forzar)
+    descarga(OCE_G2026, BRUTOS_INE / OCE_G2026_FICHERO, forzar)
 
 
 def faltan_infoelectoral() -> list[str]:

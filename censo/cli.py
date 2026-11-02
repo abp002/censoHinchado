@@ -57,16 +57,15 @@ def cmd_cera(_):
     e.to_csv(SALIDAS / "cera_escanos.csv", index=False)
     print("Escaños que cambian al sumar el voto exterior:")
     print(e.to_string(index=False))
-    # Ola de la ley de nietos: padrón exterior nuevo desde la última generales (2023 -> último año)
-    pere = lectura.lee_pere()
-    ult = pere.anyo.max()
-    t = pere.assign(prov=pere.cod.str[:2]).pivot_table(index="prov", columns="anyo", values="pere", aggfunc="sum")
+    # Ola de la ley de nietos: CERA del 29-N (listas de votación de la OCE) menos el de 2023
     pr, vp = lectura.lee_generales_provincias("02_202307_1")
-    m = cera.margen_ultimo_escano(pr, vp, t[ult] - t[2023])
-    m.to_csv(SALIDAS / f"cera_margen_2023_vs_pere_{ult}.csv", index=False)
-    print(f"\nVotantes exteriores nuevos esperados (PERE 2023-{ult}) frente al margen del último escaño de 2023:")
+    oce = lectura.lee_oce_provincias().set_index("prov")
+    nuevos = oce.cera - pr.set_index("prov").censo_cera
+    m = cera.margen_ultimo_escano(pr, vp, nuevos, cera.reparte_suspendidos(nuevos, fuentes.SUSPENDIDOS_G2026))
+    m.to_csv(SALIDAS / "cera_margen_2023_vs_g2026.csv", index=False)
+    print(f"\nCERA del 29-N: {oce.cera.sum():,} ({nuevos.sum():+,} desde 2023). Votantes exteriores nuevos")
+    print("esperados frente al margen del último escaño de 2023 (sin suspendidos: escenario proporcional):")
     print(m.head(10).to_string(index=False))
-
 
 def main():
     ap = argparse.ArgumentParser(prog="censo")

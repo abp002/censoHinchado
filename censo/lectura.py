@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .fuentes import BRUTOS_INE, BRUTOS_INFOE, ELECCIONES, Eleccion
+from .fuentes import BRUTOS_INE, BRUTOS_INFOE, ELECCIONES, OCE_G2026_FICHERO, Eleccion
 
 MUNICIPIO = re.compile(r"^(\d{2}) ?(\d{3})\b")
 
@@ -92,6 +92,16 @@ def lee_pere(ruta: Path = BRUTOS_INE / "pere_71118.json") -> pd.DataFrame:
             if x["Valor"] is not None:
                 filas.append((cod, meta["Municipios"]["Nombre"], x["Anyo"], int(x["Valor"])))
     return pd.DataFrame(filas, columns=["cod", "nombre", "anyo", "pere"])
+
+
+def lee_oce_provincias(ruta: Path = BRUTOS_INE / OCE_G2026_FICHERO) -> pd.DataFrame:
+    """Tabla de la OCE de electores por provincia -> prov, nombre, cer, cera (sin la fila de total)."""
+    h = pd.read_excel(ruta, header=None, engine="calamine")
+    h = h[h.iloc[:, 0].astype(str).str.fullmatch(r"\d{1,2}")]
+    return pd.DataFrame({"prov": h.iloc[:, 0].astype(str).str.zfill(2).values,
+                         "nombre": h.iloc[:, 1].astype(str).str.strip().values,
+                         "cer": h.iloc[:, 2].astype(int).values,
+                         "cera": h.iloc[:, 3].astype(int).values})
 
 
 def _hoja_municipios(carpeta: Path, desfase: int) -> pd.DataFrame:

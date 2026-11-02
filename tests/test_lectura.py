@@ -31,3 +31,12 @@ def test_csv_del_ine_con_miles():
     d = lee_csv(FIX / "mini.csv").set_index(["cod", "tipo"]).electores
     assert d["02001", "CER"] == 703 and d["28079", "CER"] == 2_456_789
     assert len(d) == 3  # se descartan totales y provincias
+
+
+def test_tabla_de_provincias_de_la_oce():
+    from censo.lectura import lee_oce_provincias
+    d = lee_oce_provincias(FIX / "oce_provincias.xlsx").set_index("prov")
+    assert len(d) == 52 and "Total general" not in d.nombre.values  # 50 provincias + Ceuta y Melilla
+    assert d.loc["02", "cer"] == 299_550 and d.loc["02", "cera"] == 8_995
+    assert d.loc["52", "cera"] == 6_882
+    assert d.cera.sum() == 2_776_645  # el total que trae la propia tabla
