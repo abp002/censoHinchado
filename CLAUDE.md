@@ -1,8 +1,11 @@
 # censoHinchado
 
 Anomalías del censo electoral por municipio con datos públicos (INE + Infoelectoral):
-1. **Pueblos**: el censo de residentes (CER) sube para las municipales y cae en las
-   generales siguientes. Se cruza con la diferencia de votos entre 1ª y 2ª lista.
+1. **Pueblos**: el censo de residentes (CER) sube para las municipales y cae después.
+   Dos señales: **caída** (frente a las generales siguientes, ≥ 6 y ≥ 8 %) y **pico**
+   (subida frente a las generales anteriores que se deshace antes de la siguiente
+   municipal, ≥ 6 y ≥ 8 %). El pico ve a quien se queda empadronado un tiempo (Gatón de
+   Campos 2015) y es más preciso: en 2019 señala 8 pueblos frente a 34. Se cruza con la diferencia de votos entre 1ª y 2ª lista.
 2. **CERA**: el voto exterior y la ola de la ley de nietos (padrón exterior, PERE), y
    si cambia o puede cambiar escaños del Congreso.
 
@@ -61,6 +64,12 @@ su código de Infoelectoral. Las generales con voto exterior van en `GENERALES_I
   exceso seguía el día de votar.
 - `g2015b` es la PX `p09/a2015_1`; no está claro si es dic-2015 o jun-2016.
 - m2007 → g2008 son 10 meses: mucho más ruido (120 señalados).
+- Las generales a menos de 6 meses de una municipal (abril de 2019) comparten cierre de
+  censo con ella: no valen como "antes" (`MESES_ANTES`).
+- `test_casos_conocidos_con_datos_reales` exige ver los 7 casos con respaldo público
+  (Gatón de Campos, Monterde, Huérmeces, La Acebeda, Carcedo, Padrones, Los Ausines).
+  Manchones 2015 (condenado) no lo ve ninguna señal: sus altas venían de antes y se
+  fueron despacio. La caída a más plazo sola lo vería, pero señala 1.905 pueblos en 2015.
 - Falsos positivos: Talarn (academia militar de suboficiales).
 - CERA nuevo del 29-N = CERA de las listas de la OCE − `Censo CERA` de Infoelectoral 2023.
   Los 163.020 con voto suspendido por el Supremo siguen en las listas y no hay cifra
