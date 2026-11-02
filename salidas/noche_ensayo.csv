@@ -1,0 +1,313 @@
+prov,escanos,aspirante,votos_que_faltan,votantes_cera,ventaja_neta,eleccion,provincia,cambio_real
+17,6,PSOE,377,704,0.536,02_201111_1,Girona                                            ,False
+31,5,PP,978,893,1.095,02_201111_1,Navarra                                           ,False
+39,5,P.R.C.,1786,1315,1.358,02_201111_1,Cantabria                                         ,False
+28,36,PP,17178,12454,1.379,02_201111_1,Madrid                                            ,False
+03,12,IU-LV,2126,1235,1.721,02_201111_1,Alicante / Alacant                                ,False
+20,6,EAJ-PNV,2990,1543,1.938,02_201111_1,Gipuzkoa                                          ,False
+06,6,PSOE,1713,494,3.468,02_201111_1,Badajoz                                           ,False
+15,8,PSOE,24673,5915,4.171,02_201111_1,A Coruña                                          ,False
+08,31,CiU,16728,3945,4.24,02_201111_1,Barcelona                                         ,False
+33,8,PP,21802,4906,4.444,02_201111_1,Asturias                                          ,False
+48,8,PP,9548,1665,5.735,02_201111_1,Bizkaia                                           ,False
+32,4,BNG,19124,3101,6.167,02_201111_1,Ourense                                           ,False
+11,8,IU-LV,4137,624,6.63,02_201111_1,Cádiz                                             ,False
+29,10,PSOE,11393,1623,7.02,02_201111_1,Málaga                                            ,False
+27,4,PSOE,19980,2733,7.311,02_201111_1,Lugo                                              ,False
+10,4,PP,6642,724,9.174,02_201111_1,Cáceres                                           ,False
+36,7,IU-LV,41308,4318,9.566,02_201111_1,Pontevedra                                        ,False
+30,10,UPyD,13011,1324,9.827,02_201111_1,Murcia                                            ,False
+18,7,IU-LV,19098,1904,10.03,02_201111_1,Granada                                           ,False
+41,12,UPyD,15203,1387,10.961,02_201111_1,Sevilla                                           ,False
+26,4,PSOE,9281,726,12.784,02_201111_1,La Rioja                                          ,False
+50,7,PSOE,18632,1418,13.14,02_201111_1,Zaragoza                                          ,False
+24,5,IU-LV,34090,2157,15.804,02_201111_1,León                                              ,False
+38,7,CC-NC-PNC,12104,749,16.16,02_201111_1,Santa Cruz de Tenerife                            ,False
+14,6,IU-LV,10683,649,16.461,02_201111_1,Córdoba                                           ,False
+05,3,PP,6758,401,16.853,02_201111_1,Ávila                                             ,False
+07,8,EQUO,10732,625,17.171,02_201111_1,Illes Balears                                     ,False
+09,4,PSOE,17505,955,18.33,02_201111_1,Burgos                                            ,False
+47,5,PP,16172,796,20.317,02_201111_1,Valladolid                                        ,False
+43,6,ESQUERRA,15258,722,21.133,02_201111_1,Tarragona                                         ,False
+04,6,IU-LV,28587,1340,21.334,02_201111_1,Almería                                           ,False
+46,16,PSOE,43025,1871,22.996,02_201111_1,Valencia / València                               ,False
+35,8,PSOE,21239,867,24.497,02_201111_1,Las Palmas                                        ,False
+37,4,UPyD,29601,1197,24.729,02_201111_1,Salamanca                                         ,False
+22,3,PSOE,17826,604,29.513,02_201111_1,Huesca                                            ,False
+49,3,IU-LV,27814,815,34.128,02_201111_1,Zamora                                            ,False
+25,4,ESQUERRA,20835,586,35.555,02_201111_1,Lleida                                            ,False
+02,4,PSOE,15494,426,36.371,02_201111_1,Albacete                                          ,False
+21,5,PSOE,8860,243,36.461,02_201111_1,Huelva                                            ,False
+12,5,PP,18378,476,38.609,02_201111_1,Castellón / Castelló                              ,False
+44,3,IU-LV,13879,301,46.11,02_201111_1,Teruel                                            ,False
+01,4,PP,17807,343,51.915,02_201111_1,Araba - Álava                                     ,False
+23,6,IU-LV,27017,496,54.47,02_201111_1,Jaén                                              ,False
+34,3,IU-LV,23046,366,62.967,02_201111_1,Palencia                                          ,False
+45,6,IU-LV,32759,438,74.792,02_201111_1,Toledo                                            ,False
+13,5,PP,25788,284,90.803,02_201111_1,Ciudad Real                                       ,False
+40,3,UPyD,17833,179,99.626,02_201111_1,Segovia                                           ,False
+19,3,UPyD,25709,229,112.266,02_201111_1,Guadalajara                                       ,False
+52,1,PSOE,11047,68,162.456,02_201111_1,Melilla                                           ,False
+16,3,PSOE,28659,154,186.097,02_201111_1,Cuenca                                            ,False
+51,1,PSOE,14527,59,246.22,02_201111_1,Ceuta                                             ,False
+42,2,PP,4059,14,289.929,02_201111_1,Soria                                             ,False
+28,36,PSOE,5536,19719,0.281,02_201512_1,Madrid,False
+18,7,PSOE,725,1957,0.37,02_201512_1,Granada,False
+04,6,PP,1040,1256,0.828,02_201512_1,Almería,False
+24,5,PSOE,1658,1969,0.842,02_201512_1,León,False
+25,4,DL,1024,963,1.063,02_201512_1,Lleida,False
+29,11,IU-UPeC,3424,2271,1.508,02_201512_1,Málaga,False
+23,5,PODEMOS,1035,645,1.605,02_201512_1,Jaén,False
+08,31,C's,15550,8454,1.839,02_201512_1,Barcelona,False
+26,4,C's,1224,596,2.054,02_201512_1,"Rioja, La",False
+13,5,PODEMOS,1062,502,2.116,02_201512_1,Ciudad Real,False
+36,7,C's,8000,3581,2.234,02_201512_1,Pontevedra,False
+33,8,IU-UPeC,9881,4207,2.349,02_201512_1,Asturias,False
+41,12,PODEMOS,5669,2231,2.541,02_201512_1,Sevilla,False
+19,3,PODEMOS,819,294,2.786,02_201512_1,Guadalajara,False
+46,15,IU-UPeC,10389,3553,2.924,02_201512_1,Valencia/València,False
+02,4,PODEMOS,1522,511,2.978,02_201512_1,Albacete,False
+06,6,C's,1952,630,3.098,02_201512_1,Badajoz,False
+09,4,C's,3222,917,3.514,02_201512_1,Burgos,False
+22,3,C's,2077,579,3.587,02_201512_1,Huesca,False
+50,7,PODEMOS,5359,1373,3.903,02_201512_1,Zaragoza,False
+30,10,PODEMOS,7285,1668,4.368,02_201512_1,Murcia,False
+20,6,EH Bildu,10164,2228,4.562,02_201512_1,Gipuzkoa,False
+31,5,EH Bildu,5625,1163,4.837,02_201512_1,Navarra,False
+01,4,PODEMOS,2323,442,5.256,02_201512_1,Araba/Álava,False
+17,6,C's,6208,1123,5.528,02_201512_1,Girona,False
+15,8,PODEMOS-En,22555,3978,5.67,02_201512_1,"Coruña, A",False
+48,8,PODEMOS,11995,1824,6.576,02_201512_1,Bizkaia,False
+37,4,PODEMOS,9608,1414,6.795,02_201512_1,Salamanca,False
+44,3,PODEMOS,2307,288,8.01,02_201512_1,Teruel,False
+32,4,PP,16539,2030,8.147,02_201512_1,Ourense,False
+03,12,PP,17237,2079,8.291,02_201512_1,Alicante/Alacant,False
+38,7,PODEMOS,5518,659,8.373,02_201512_1,Santa Cruz de Tenerife,False
+10,4,PODEMOS,7714,823,9.373,02_201512_1,Cáceres,False
+05,3,C's,4210,418,10.072,02_201512_1,Ávila,False
+40,3,C's,2450,243,10.082,02_201512_1,Segovia,False
+49,3,PODEMOS,8209,769,10.675,02_201512_1,Zamora,False
+35,8,PODEMOS,8963,764,11.732,02_201512_1,"Palmas, Las",False
+45,6,PP,7948,669,11.88,02_201512_1,Toledo,False
+43,6,EN COMÚ,14127,1088,12.984,02_201512_1,Tarragona,False
+42,2,PODEMOS,4014,273,14.703,02_201512_1,Soria,False
+11,9,IU-UPeC,20887,1401,14.909,02_201512_1,Cádiz,False
+27,4,C's,23528,1496,15.727,02_201512_1,Lugo,False
+34,3,C's,6270,389,16.118,02_201512_1,Palencia,False
+07,8,MÉS,10441,584,17.878,02_201512_1,"Balears, Illes",False
+14,6,PSOE,17338,968,17.911,02_201512_1,Córdoba,False
+21,5,C's,6439,334,19.278,02_201512_1,Huelva,False
+39,5,PSOE,28148,1284,21.922,02_201512_1,Cantabria,False
+47,5,PP,28576,1188,24.054,02_201512_1,Valladolid,False
+12,5,PODEMOS-COM,21984,736,29.87,02_201512_1,Castellón/Castelló,False
+16,3,PODEMOS,11301,212,53.307,02_201512_1,Cuenca,False
+51,1,PSOE,7188,95,75.663,02_201512_1,Ceuta,False
+52,1,PSOE,5421,62,87.435,02_201512_1,Melilla,False
+28,36,C's,3892,26638,0.146,02_201606_1,Madrid                                            ,False
+37,4,C's,729,1626,0.448,02_201606_1,Salamanca                                         ,False
+32,4,PODEMOS-EN MAREA-ANOVA-EU,1632,2874,0.568,02_201606_1,Ourense                                           ,False
+15,8,C's,3991,5829,0.685,02_201606_1,A Coruña                                          ,False
+04,6,PODEMOS-IU-EQUO,1633,1773,0.921,02_201606_1,Almería                                           ,False
+30,10,PP,2286,2390,0.956,02_201606_1,Murcia                                            ,False
+08,31,PSOE,11684,11990,0.974,02_201606_1,Barcelona                                         ,False
+45,6,C's,1208,930,1.299,02_201606_1,Toledo                                            ,False
+41,12,C's,4764,3103,1.535,02_201606_1,Sevilla                                           ,False
+48,8,EAJ-PNV,3733,2305,1.62,02_201606_1,Bizkaia                                           ,False
+01,4,PODEMOS-IU-EQUO,1074,579,1.855,02_201606_1,Araba - Álava                                     ,False
+03,12,PSOE,5110,2739,1.866,02_201606_1,Alicante / Alacant                                ,False
+25,4,PSOE,1941,995,1.951,02_201606_1,Lleida                                            ,False
+02,4,C's,1419,649,2.186,02_201606_1,Albacete                                          ,False
+36,7,C's,11104,4906,2.263,02_201606_1,Pontevedra                                        ,False
+43,6,ECP,2776,1193,2.327,02_201606_1,Tarragona                                         ,False
+20,6,PP,7395,2768,2.672,02_201606_1,Gipuzkoa                                          ,False
+39,5,PP,5523,1880,2.938,02_201606_1,Cantabria                                         ,False
+38,7,PSOE,3803,1243,3.06,02_201606_1,Santa Cruz de Tenerife                            ,False
+22,3,PP,2188,712,3.073,02_201606_1,Huesca                                            ,False
+27,4,PP,6416,1893,3.389,02_201606_1,Lugo                                              ,False
+17,6,PP,4764,1301,3.662,02_201606_1,Girona                                            ,False
+09,4,C's,5198,1222,4.254,02_201606_1,Burgos                                            ,False
+26,4,C's,4475,917,4.88,02_201606_1,La Rioja                                          ,False
+13,5,PODEMOS-IU-EQUO,3200,647,4.946,02_201606_1,Ciudad Real                                       ,False
+19,3,PODEMOS-IU-EQUO,2238,443,5.052,02_201606_1,Guadalajara                                       ,False
+24,4,C's,13246,2537,5.221,02_201606_1,León                                              ,False
+46,16,PSOE,28481,5079,5.608,02_201606_1,Valencia / València                               ,False
+10,4,PODEMOS-IU-EQUO,6365,1067,5.965,02_201606_1,Cáceres                                           ,False
+50,7,PODEMOS-IU-EQUO,15658,2481,6.311,02_201606_1,Zaragoza                                          ,False
+06,6,C's,6623,874,7.578,02_201606_1,Badajoz                                           ,False
+18,7,PSOE,21245,2687,7.907,02_201606_1,Granada                                           ,False
+14,6,PP,11736,1455,8.066,02_201606_1,Córdoba                                           ,False
+44,3,PODEMOS-IU-EQUO,2972,328,9.061,02_201606_1,Teruel                                            ,False
+05,3,C's,5125,548,9.352,02_201606_1,Ávila                                             ,False
+42,2,PP,3234,343,9.429,02_201606_1,Soria                                             ,False
+47,5,PP,15337,1557,9.85,02_201606_1,Valladolid                                        ,False
+31,5,EH Bildu,15968,1533,10.416,02_201606_1,Navarra                                           ,False
+49,3,PODEMOS-IU-EQUO,10598,1009,10.503,02_201606_1,Zamora                                            ,False
+33,8,PSOE,61340,5734,10.698,02_201606_1,Asturias                                          ,False
+29,11,PSOE,40807,3108,13.13,02_201606_1,Málaga                                            ,False
+11,9,C's,29097,2021,14.397,02_201606_1,Cádiz                                             ,False
+23,5,C's,14142,880,16.07,02_201606_1,Jaén                                              ,False
+40,3,C's,5432,321,16.922,02_201606_1,Segovia                                           ,False
+34,3,PODEMOS-IU-EQUO,7953,461,17.252,02_201606_1,Palencia                                          ,False
+12,5,PODEMOS-COMPROMÍS-EUPV,16129,908,17.763,02_201606_1,Castellón / Castelló                              ,False
+21,5,C's,11246,541,20.787,02_201606_1,Huelva                                            ,False
+07,8,PODEMOS-IU-EQUO,22110,690,32.043,02_201606_1,Illes Balears                                     ,False
+35,8,CCa-PNC,38451,1139,33.759,02_201606_1,Las Palmas                                        ,False
+16,3,PODEMOS-IU-EQUO,11299,220,51.359,02_201606_1,Cuenca                                            ,False
+52,1,PSOE,6696,110,60.873,02_201606_1,Melilla                                           ,False
+51,1,PSOE,9010,101,89.208,02_201606_1,Ceuta                                             ,False
+08,32,FRONT REPUBLICÀ,143,13814,0.01,02_201904_1,Barcelona                     ,False
+50,7,Cs,81,2430,0.033,02_201904_1,Zaragoza                      ,False
+31,5,EH Bildu,442,1543,0.286,02_201904_1,Navarra                       ,False
+03,12,Cs,1510,2738,0.551,02_201904_1,Alicante / Alacant            ,False
+17,6,ECP-GUANYEM EL CANVI,1052,1660,0.634,02_201904_1,Girona                        ,False
+37,4,PSOE,1068,1624,0.658,02_201904_1,Salamanca                     ,False
+07,8,Cs,731,1108,0.66,02_201904_1,Illes Balears                 ,False
+01,4,PP,382,572,0.668,02_201904_1,Araba / Álava                 ,False
+21,5,VOX,401,476,0.842,02_201904_1,Huelva                        ,False
+34,3,PSOE,445,493,0.903,02_201904_1,Palencia                      ,False
+29,11,VOX,4033,3240,1.245,02_201904_1,Málaga                        ,False
+28,37,VOX,38481,26805,1.436,02_201904_1,Madrid                        ,False
+45,6,PODEMOS-IU-EQUO,1729,943,1.834,02_201904_1,Toledo                        ,False
+39,5,VOX,5073,1853,2.738,02_201904_1,Cantabria                     ,False
+15,8,BNG,12371,3797,3.258,02_201904_1,A Coruña                      ,False
+48,8,EAJ-PNV,7481,2279,3.283,02_201904_1,Bizkaia                       ,False
+49,3,PSOE,2896,820,3.532,02_201904_1,Zamora                        ,False
+35,8,Cs,4366,1093,3.995,02_201904_1,Las Palmas                    ,False
+09,4,PODEMOS-IU-EQUO,4746,1122,4.23,02_201904_1,Burgos                        ,False
+32,4,Cs,10899,2560,4.257,02_201904_1,Ourense                       ,False
+47,5,PODEMOS-IU-EQUO,6802,1507,4.514,02_201904_1,Valladolid                    ,False
+23,5,VOX,4038,832,4.853,02_201904_1,Jaén                          ,False
+33,7,PP,25938,5156,5.031,02_201904_1,Asturias                      ,False
+30,10,PP,10091,1943,5.194,02_201904_1,Murcia                        ,False
+36,7,PODEMOS-EU-MAREAS EN COMÚN-EQUO,23145,4454,5.196,02_201904_1,Pontevedra                    ,False
+04,6,PODEMOS-IU-EQUO,8183,1519,5.387,02_201904_1,Almería                       ,False
+02,4,VOX,3493,645,5.416,02_201904_1,Albacete                      ,False
+14,6,PSOE,7743,1407,5.503,02_201904_1,Córdoba                       ,False
+11,9,PSOE,10900,1953,5.581,02_201904_1,Cádiz                         ,False
+46,15,PSOE,29254,4821,6.068,02_201904_1,Valencia / València           ,False
+24,4,PODEMOS-IU-EQUO,12624,2075,6.084,02_201904_1,León                          ,False
+12,5,VOX,5984,908,6.59,02_201904_1,Castellón / Castelló          ,False
+20,6,PSOE,18778,2647,7.094,02_201904_1,Gipuzkoa                      ,False
+43,6,PSOE,12281,1628,7.544,02_201904_1,Tarragona                     ,False
+06,6,PP,6417,838,7.658,02_201904_1,Badajoz                       ,False
+27,4,PODEMOS-EU-MAREAS EN COMÚN-EQUO,12863,1567,8.209,02_201904_1,Lugo                          ,False
+18,7,PP,21496,2584,8.319,02_201904_1,Granada                       ,False
+41,12,VOX,25996,3097,8.394,02_201904_1,Sevilla                       ,False
+19,3,VOX,3286,390,8.426,02_201904_1,Guadalajara                   ,False
+26,4,PODEMOS-IU-EQUO,7317,840,8.711,02_201904_1,La Rioja                      ,False
+38,7,PSOE,12794,1401,9.132,02_201904_1,Santa Cruz de Tenerife        ,False
+05,3,VOX,4443,483,9.199,02_201904_1,Ávila                         ,False
+22,3,PODEMOS-IU-EQUO,7448,712,10.461,02_201904_1,Huesca                        ,False
+25,4,Cs,18394,1387,13.262,02_201904_1,Lleida                        ,False
+10,4,VOX,16483,917,17.975,02_201904_1,Cáceres                       ,False
+44,3,PSOE,5143,276,18.634,02_201904_1,Teruel                        ,False
+13,5,PP,11009,571,19.28,02_201904_1,Ciudad Real                   ,False
+40,3,VOX,6970,321,21.713,02_201904_1,Segovia                       ,False
+16,3,VOX,4557,207,22.014,02_201904_1,Cuenca                        ,False
+42,2,Cs,5360,184,29.13,02_201904_1,Soria                         ,False
+51,1,VOX,4688,108,43.407,02_201904_1,Ceuta                         ,False
+52,1,PSOE,1100,9,122.222,02_201904_1,Melilla                       ,False
+48,8,PP,99,2994,0.033,02_201911_1,Bizkaia                       ,True
+29,11,VOX,835,3833,0.218,02_201911_1,Málaga                        ,False
+21,5,PODEMOS-IU,231,563,0.41,02_201911_1,Huelva                        ,False
+28,37,PSOE,19391,32784,0.591,02_201911_1,Madrid                        ,False
+07,8,PSOE,794,1339,0.593,02_201911_1,Illes Balears                 ,False
+49,3,PP,655,985,0.665,02_201911_1,Zamora                        ,False
+16,3,VOX,200,298,0.671,02_201911_1,Cuenca                        ,False
+09,4,VOX,1065,1421,0.749,02_201911_1,Burgos                        ,False
+08,32,PP,13579,17183,0.79,02_201911_1,Barcelona                     ,False
+17,6,CUP-PR,2053,2043,1.005,02_201911_1,Girona                        ,False
+03,12,PODEMOS-IU,3437,3248,1.058,02_201911_1,Alicante / Alacant            ,False
+52,1,CpM,179,157,1.14,02_201911_1,Melilla                       ,False
+15,8,VOX,7973,6350,1.256,02_201911_1,A Coruña                      ,False
+46,15,PSOE,8454,5790,1.46,02_201911_1,Valencia / València           ,False
+18,7,VOX,5187,3168,1.637,02_201911_1,Granada                       ,False
+50,7,Cs,5829,2942,1.981,02_201911_1,Zaragoza                      ,False
+22,3,VOX,1720,848,2.028,02_201911_1,Huesca                        ,False
+36,7,BNG,11263,5450,2.067,02_201911_1,Pontevedra                    ,False
+14,6,PSOE,3480,1651,2.108,02_201911_1,Córdoba                       ,False
+30,10,Cs,5842,2503,2.334,02_201911_1,Murcia                        ,False
+24,4,PP,7101,2623,2.707,02_201911_1,León                          ,False
+01,4,PP,1982,714,2.776,02_201911_1,Araba / Álava                 ,False
+40,3,PP,1059,381,2.78,02_201911_1,Segovia                       ,False
+43,6,VOX,5578,1991,2.802,02_201911_1,Tarragona                     ,False
+05,3,PP,2134,593,3.599,02_201911_1,Ávila                         ,False
+33,7,Cs,24504,6252,3.919,02_201911_1,Asturias                      ,False
+39,5,PSOE,8729,2112,4.133,02_201911_1,Cantabria                     ,False
+34,3,PSOE,2384,548,4.35,02_201911_1,Palencia                      ,False
+32,4,PODEMOS-EU,14687,3047,4.82,02_201911_1,Ourense                       ,False
+37,4,PSOE,10525,2086,5.046,02_201911_1,Salamanca                     ,False
+38,7,PSOE,7573,1464,5.173,02_201911_1,Santa Cruz de Tenerife        ,False
+27,4,PODEMOS-EU,12106,1961,6.173,02_201911_1,Lugo                          ,False
+47,5,PODEMOS-IU,11834,1773,6.675,02_201911_1,Valladolid                    ,False
+12,5,PP,8021,1079,7.434,02_201911_1,Castellón / Castelló          ,False
+04,6,PODEMOS-IU,14766,1933,7.639,02_201911_1,Almería                       ,False
+25,4,JxCAT-JUNTS,12954,1653,7.837,02_201911_1,Lleida                        ,False
+31,5,PSOE,15208,1940,7.839,02_201911_1,Navarra                       ,False
+11,9,PODEMOS-IU,17518,2230,7.856,02_201911_1,Cádiz                         ,False
+45,6,PODEMOS-IU,8289,1034,8.016,02_201911_1,Toledo                        ,False
+20,6,PP,25823,3083,8.376,02_201911_1,Gipuzkoa                      ,False
+10,4,PP,9950,1160,8.578,02_201911_1,Cáceres                       ,False
+26,4,VOX,9333,963,9.692,02_201911_1,La Rioja                      ,False
+51,1,PSOE,1330,132,10.076,02_201911_1,Ceuta                         ,False
+41,12,VOX,39374,3789,10.392,02_201911_1,Sevilla                       ,False
+23,5,PODEMOS-IU,11429,989,11.556,02_201911_1,Jaén                          ,False
+06,6,PODEMOS-IU,12515,964,12.982,02_201911_1,Badajoz                       ,False
+35,8,Cs,18990,1280,14.836,02_201911_1,Las Palmas                    ,False
+02,4,PP,10870,672,16.176,02_201911_1,Albacete                      ,False
+13,5,PODEMOS-IU,15262,695,21.96,02_201911_1,Ciudad Real                   ,False
+44,3,VOX,8142,367,22.185,02_201911_1,Teruel                        ,False
+42,2,VOX,8952,349,25.65,02_201911_1,Soria                         ,False
+19,3,PODEMOS-IU,15578,501,31.094,02_201911_1,Guadalajara                   ,False
+28,37,PP,1915,44807,0.043,02_202307_1,Madrid,True
+39,5,PP,311,3463,0.09,02_202307_1,Cantabria,False
+17,6,PP,392,2335,0.168,02_202307_1,Girona,False
+08,32,CUP-PR,6154,21434,0.287,02_202307_1,Barcelona,False
+38,7,SUMAR,1515,4658,0.325,02_202307_1,Santa Cruz de Tenerife,False
+29,11,PSOE,2730,5615,0.486,02_202307_1,Málaga,False
+36,7,B.N.G.,5906,9830,0.601,02_202307_1,Pontevedra,False
+20,6,SUMAR,2753,4337,0.635,02_202307_1,Gipuzkoa,False
+43,6,PSOE,1306,1992,0.656,02_202307_1,Tarragona,False
+37,4,PSOE,1842,2522,0.73,02_202307_1,Salamanca,False
+33,7,PSOE,7299,8766,0.833,02_202307_1,Asturias,False
+32,4,PSOE,5252,5849,0.898,02_202307_1,Ourense,False
+31,5,SUMAR,2851,2811,1.014,02_202307_1,Navarra,False
+35,8,NC-bc,3011,2627,1.146,02_202307_1,Las Palmas,False
+15,8,PSOE,12790,10402,1.23,02_202307_1,A Coruña,False
+41,12,VOX,7154,4697,1.523,02_202307_1,Sevilla,False
+02,4,VOX,1353,860,1.573,02_202307_1,Albacete,False
+27,4,PSOE,6289,3737,1.683,02_202307_1,Lugo,False
+30,10,PP,6320,3544,1.783,02_202307_1,Murcia,False
+18,7,PSOE,9111,4656,1.957,02_202307_1,Granada,False
+25,4,PP,3490,1758,1.985,02_202307_1,Lleida,False
+24,4,VOX,10639,3984,2.67,02_202307_1,León,False
+46,16,PSOE,22553,7519,2.999,02_202307_1,València/Valencia,False
+12,5,SUMAR,4905,1447,3.39,02_202307_1,Castelló/Castellón,False
+11,9,PSOE,10474,2868,3.652,02_202307_1,Cádiz,False
+03,12,SUMAR,16694,4461,3.742,02_202307_1,Alacant/Alicante,False
+19,3,PP,3033,757,4.007,02_202307_1,Guadalajara,False
+09,4,VOX,8953,2146,4.172,02_202307_1,Burgos,False
+44,3,EXISTE,1957,443,4.418,02_202307_1,Teruel,False
+06,5,PSOE,6996,1512,4.627,02_202307_1,Badajoz,False
+49,3,VOX,9328,1746,5.342,02_202307_1,Zamora,False
+22,3,PSOE,5664,958,5.912,02_202307_1,Huesca,False
+01,4,SUMAR,6568,1097,5.987,02_202307_1,Araba/Álava,False
+04,6,VOX,19154,2981,6.425,02_202307_1,Almería,False
+14,6,PP,13800,2132,6.473,02_202307_1,Córdoba,False
+50,7,PSOE,27013,4071,6.635,02_202307_1,Zaragoza,False
+47,5,PP,14593,2165,6.74,02_202307_1,Valladolid,False
+48,8,EAJ-PNV,24617,3596,6.846,02_202307_1,Bizkaia,False
+05,3,VOX,6068,883,6.872,02_202307_1,Ávila,False
+07,8,SUMAR,17550,2382,7.368,02_202307_1,Illes Balears,False
+16,3,PSOE,2802,370,7.573,02_202307_1,Cuenca,False
+42,2,SY,5151,678,7.597,02_202307_1,Soria,False
+10,4,VOX,12746,1536,8.298,02_202307_1,Cáceres,False
+26,4,PP,13681,1487,9.2,02_202307_1,La Rioja,False
+34,3,PSOE,7104,770,9.226,02_202307_1,Palencia,False
+45,6,SUMAR,17166,1711,10.033,02_202307_1,Toledo,False
+40,3,VOX,7411,564,13.14,02_202307_1,Segovia,False
+21,5,SUMAR,10878,689,15.788,02_202307_1,Huelva,False
+23,5,SUMAR,25016,1560,16.036,02_202307_1,Jaén,False
+51,1,PSOE,1589,89,17.854,02_202307_1,Ceuta,False
+13,5,PP,23361,952,24.539,02_202307_1,Ciudad Real,False
+52,1,PSOE,6480,177,36.61,02_202307_1,Melilla,False

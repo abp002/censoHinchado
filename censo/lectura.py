@@ -151,7 +151,7 @@ def lee_generales_provincias(codigo_infoe: str) -> tuple[pd.DataFrame, pd.DataFr
     col = {n: i for i, n in enumerate(cab)}
     prov = cuerpo.iloc[:, 1].astype(int).map("{:02d}".format)
     provincias = pd.DataFrame({
-        "prov": prov.values, "nombre": cuerpo.iloc[:, 2].values,
+        "prov": prov.values, "nombre": cuerpo.iloc[:, 2].astype(str).str.strip().values,
         "censo_cer": cuerpo.iloc[:, col["Censo electoral sin CERA"]].astype(int).values,
         "censo_cera": cuerpo.iloc[:, col["Censo CERA"]].astype(int).values,
         "votantes_cera": cuerpo.iloc[:, col["Total votantes CERA"]].astype(int).values,

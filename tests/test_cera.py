@@ -35,3 +35,25 @@ def test_reparte_suspendidos_en_proporcion_a_lo_ganado():
     assert r["28"] == 15_000 and r["08"] == 5_000 and r["49"] == 0  # quien pierde CERA no recibe
     tope = reparte_suspendidos(nuevos, 1_000_000)
     assert (tope <= nuevos.clip(lower=0)).all()  # nadie pierde más de lo que ganó
+
+
+def test_pendientes_ventaja_neta_y_orden():
+    import pandas as pd
+    from censo.cera import pendientes
+    # 01: B está a 1 voto del último escaño de A (cocientes 100/2=50 frente a 49/1)
+    # 02: lejos de cualquier vuelco
+    v = pd.DataFrame({"prov": ["01", "01", "02", "02"], "candidatura": ["A", "B", "A", "B"],
+                      "votos": [100, 49, 900, 100], "diputados": [2, 0, 2, 0]})
+    d = pendientes(v, pd.Series({"01": 149, "02": 1000}), pd.Series({"01": 20, "02": 20}))
+    assert list(d.prov) == ["01", "02"]  # lo más en juego primero
+    assert d.iloc[0].aspirante == "B" and d.iloc[0].votos_que_faltan == 2
+    assert d.iloc[0].ventaja_neta == 0.1 and d.iloc[1].ventaja_neta > 1  # en 02 no le da ni todo el exterior
+
+
+def test_votos_sin_cera_es_la_suma_de_municipios():
+    import pandas as pd
+    from censo.cera import votos_sin_cera
+    prov = pd.DataFrame({"prov": ["28", "28"], "candidatura": ["A", "B"], "votos": [110, 60], "diputados": [1, 1]})
+    mun = pd.DataFrame({"cod": ["28001", "28002", "28001"], "candidatura": ["A", "A", "B"], "votos": [50, 50, 55]})
+    d = votos_sin_cera(prov, mun).set_index("candidatura")
+    assert d.votos.to_dict() == {"A": 100, "B": 55} and d.diputados.sum() == 2

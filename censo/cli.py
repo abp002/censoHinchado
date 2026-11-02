@@ -1,4 +1,4 @@
-"""censo descarga | pueblos | cera | todo  — escribe los resultados en salidas/."""
+"""censo descarga | pueblos | cera | ensayo | noche <csv> | todo  — escribe los resultados en salidas/."""
 import argparse
 from pathlib import Path
 
@@ -7,6 +7,9 @@ import pandas as pd
 from . import cera, fuentes, lectura, pueblos
 
 SALIDAS = Path(__file__).resolve().parent.parent / "salidas"
+# Ventaja neta dentro del voto exterior por debajo de la cual un escaño está en juego.
+# En el ensayo 2011-2023 los dos cambios reales quedaron por debajo del 5 %.
+UMBRAL_EN_JUEGO = 0.10
 GENERALES_INFOE = ["02_201111_1", "02_201512_1", "02_201606_1", "02_201904_1", "02_201911_1", "02_202307_1"]
 
 
@@ -67,13 +70,57 @@ def cmd_cera(_):
     print("esperados frente al margen del último escaño de 2023 (sin suspendidos: escenario proporcional):")
     print(m.head(10).to_string(index=False))
 
+def cmd_ensayo(_):
+    """La noche electoral hacia atrás: votos sin CERA de cada generales y su voto exterior real."""
+    esc = pd.read_csv(SALIDAS / "cera_escanos.csv", dtype={"prov": str})
+    filas = []
+    for c in GENERALES_INFOE:
+        pr, vp = lectura.lee_generales_provincias(c)
+        sin = cera.votos_sin_cera(vp, lectura.lee_generales_municipios(c))
+        p = pr.set_index("prov")
+        ratio = sin.groupby("prov").votos.sum() / vp.groupby("prov").votos.sum()
+        d = cera.pendientes(sin, (p.validos * ratio).round(), p.votantes_cera)
+        filas.append(d.assign(eleccion=c, provincia=d.prov.map(p.nombre),
+                              cambio_real=d.prov.isin(set(esc[esc.eleccion == c].prov))))
+    d = pd.concat(filas)
+    d.to_csv(SALIDAS / "noche_ensayo.csv", index=False)
+    jugadas = d[d.ventaja_neta <= UMBRAL_EN_JUEGO]
+    print(f"Ventaja neta <= {UMBRAL_EN_JUEGO:.0%}: {len(jugadas)} provincias señaladas, "
+          f"{jugadas.cambio_real.sum()} cambiaron; cambios reales fuera del umbral: "
+          f"{(d.cambio_real & (d.ventaja_neta > UMBRAL_EN_JUEGO)).sum()}")
+    print(jugadas[["eleccion", "provincia", "aspirante", "votos_que_faltan", "votantes_cera",
+                   "ventaja_neta", "cambio_real"]].to_string(index=False))
+
+
+def cmd_noche(a):
+    """Resultados provisionales del 29-N (CSV: prov, candidatura, votos, diputados, validos)."""
+    if not a.fichero:
+        raise SystemExit("uso: censo noche <resultados.csv>")
+    r = pd.read_csv(a.fichero, dtype={"prov": str})
+    r["prov"] = r.prov.str.zfill(2)
+    validos = r.groupby("prov").validos.first()
+    pr, _ = lectura.lee_generales_provincias("02_202307_1")
+    part = pr.set_index("prov").pipe(lambda p: p.votantes_cera / p.censo_cera)
+    oce = lectura.lee_oce_provincias().set_index("prov")
+    sus = cera.reparte_suspendidos(oce.cera - pr.set_index("prov").censo_cera, fuentes.SUSPENDIDOS_G2026)
+    con = cera.pendientes(r, validos, (oce.cera * part).round())
+    sin = cera.pendientes(r, validos, ((oce.cera - sus) * part).round())
+    d = con.merge(sin[["prov", "votantes_cera", "ventaja_neta"]], on="prov", suffixes=("", "_sin_suspendidos"))
+    d.insert(1, "provincia", d.prov.map(oce.nombre))
+    d.to_csv(SALIDAS / "noche_pendientes_cera.csv", index=False)
+    print("Último escaño que puede dar la vuelta el voto exterior (escrutinio general, 5 días después):")
+    print(d[d.ventaja_neta <= 2 * UMBRAL_EN_JUEGO].to_string(index=False))
+
+
 def main():
     ap = argparse.ArgumentParser(prog="censo")
-    ap.add_argument("orden", choices=["descarga", "pueblos", "cera", "todo"])
+    ap.add_argument("orden", choices=["descarga", "pueblos", "cera", "ensayo", "noche", "todo"])
+    ap.add_argument("fichero", nargs="?")
     a = ap.parse_args()
     SALIDAS.mkdir(exist_ok=True)
     ordenes = {"descarga": [cmd_descarga], "pueblos": [cmd_pueblos], "cera": [cmd_cera],
-               "todo": [cmd_descarga, cmd_pueblos, cmd_cera]}
+               "ensayo": [cmd_ensayo], "noche": [cmd_noche],
+               "todo": [cmd_descarga, cmd_pueblos, cmd_cera, cmd_ensayo]}
     for f in ordenes[a.orden]:
         f(a)
 

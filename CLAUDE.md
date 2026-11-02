@@ -14,8 +14,24 @@ Se habla siempre de **anomalías estadísticas**, nunca de fraude.
 uv run censo descarga   # INE automático; lista lo que falta de Infoelectoral
 uv run censo pueblos    # salidas/pueblos_senalados.csv, pueblos_margen.csv
 uv run censo cera       # salidas/cera_escanos.csv, cera_ola_municipios.csv, cera_margen_2023_vs_g2026.csv
+uv run censo ensayo     # la noche electoral hacia atrás, 2011-2023: salidas/noche_ensayo.csv
+uv run censo noche r.csv  # 29-N: salidas/noche_pendientes_cera.csv
 uv run pytest -q
 ```
+
+## Noche del 29-N
+
+El voto CERA no entra en el recuento de la noche: se cuenta en el escrutinio general,
+cinco días después. `censo noche` toma los provisionales en un CSV con columnas
+`prov, candidatura, votos, diputados, validos` (una fila por provincia y candidatura;
+`validos` repetido) y dice qué último escaño puede dar la vuelta el exterior.
+`ventaja_neta` = votos que le faltan al aspirante / votantes exteriores esperados
+(CERA del 29-N × participación exterior de 2023, con y sin suspendidos). En el ensayo,
+los dos vuelcos reales (Bizkaia nov-2019, Madrid 2023) quedaron por debajo del 5 % y
+fueron la primera de su elección; con el umbral del 10 % salen 5 provincias en 6
+elecciones y cambian 2. Señala lo que está en juego, no hacia dónde cae.
+El formato de los provisionales de Interior no se conoce hasta esa noche: hay que
+pasarlos a ese CSV.
 
 ## Datos (en `datos/`, ignorado por git)
 

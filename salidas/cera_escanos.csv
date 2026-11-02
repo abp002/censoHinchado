@@ -1,5 +1,5 @@
 eleccion,prov,provincia,candidatura,escanos_con_cera,escanos_sin_cera,votos_cera,votantes_cera,censo_cera
-02_201911_1,48,Bizkaia                       ,PP,1.0,0.0,407.0,2994.0,39997.0
-02_201911_1,48,Bizkaia                       ,EAJ-PNV,3.0,4.0,731.0,2994.0,39997.0
+02_201911_1,48,Bizkaia,PP,1.0,0.0,407.0,2994.0,39997.0
+02_201911_1,48,Bizkaia,EAJ-PNV,3.0,4.0,731.0,2994.0,39997.0
 02_202307_1,28,Madrid,PP,16.0,15.0,19006.0,44807.0,376504.0
 02_202307_1,28,Madrid,PSOE,10.0,11.0,10411.0,44807.0,376504.0

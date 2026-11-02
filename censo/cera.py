@@ -41,12 +41,12 @@ def efecto_cera(provincias: pd.DataFrame, votos_prov: pd.DataFrame, votos_mun: p
     municipios (que no). Devuelve una fila por provincia y partido con escaños cambiados,
     y comprueba de paso que el D'Hondt reproduce el reparto oficial.
     """
-    mun = votos_mun.assign(prov=votos_mun.cod.str[:2]).groupby(["prov", "candidatura"]).votos.sum()
+    sin_cera = votos_sin_cera(votos_prov, votos_mun).set_index(["prov", "candidatura"]).votos
     filas = []
     for prov, g in votos_prov.groupby("prov"):
         info = provincias.set_index("prov").loc[prov]
         con = dict(zip(g.candidatura, g.votos))
-        sin = {p: int(mun.get((prov, p), 0)) for p in con}
+        sin = {p: int(sin_cera[prov, p]) for p in con}
         escanos = int(g.diputados.sum())
         oficial = dict(zip(g.candidatura, g.diputados))
         r_con = dhondt(con, escanos, validos=int(info.validos))
@@ -115,3 +115,35 @@ def margen_ultimo_escano(provincias: pd.DataFrame, votos_prov: pd.DataFrame, nue
     if suspendidos is not None:
         d["veces_sin_suspendidos"] = (d.votantes_nuevos_sin_suspendidos / d.votos_que_faltan).round(2)
     return d.sort_values("veces_el_margen", ascending=False)
+
+
+def votos_sin_cera(votos_prov: pd.DataFrame, votos_mun: pd.DataFrame) -> pd.DataFrame:
+    """Votos por provincia como se verían la noche electoral: la suma de los municipios
+    (el voto CERA solo está en el total provincial). Mantiene los diputados de la provincia."""
+    mun = votos_mun.assign(prov=votos_mun.cod.str[:2]).groupby(["prov", "candidatura"]).votos.sum()
+    out = votos_prov[["prov", "candidatura", "diputados"]].copy()
+    out["votos"] = [int(mun.get(k, 0)) for k in zip(out.prov, out.candidatura)]
+    return out
+
+
+def pendientes(votos: pd.DataFrame, validos: pd.Series, votantes_cera: pd.Series) -> pd.DataFrame:
+    """Qué último escaño puede dar la vuelta el voto exterior que aún no se ha contado.
+
+    votos: prov, candidatura, votos, diputados sin el CERA (resultados de la noche).
+    validos: votos válidos por provincia sin el CERA (para el umbral del 3 %).
+    votantes_cera: votantes exteriores que se esperan por provincia.
+
+    ventaja_neta es la parte del voto exterior que el aspirante tendría que sacarle de
+    ventaja al que tiene el último escaño: votos que le faltan / votantes exteriores.
+    Por encima de 1 es imposible; cuanto más baja, más en juego.
+    """
+    filas = []
+    for prov, g in votos.groupby("prov"):
+        falta = votos_para_un_escano(dict(zip(g.candidatura, g.votos)), int(g.diputados.sum()),
+                                     validos=int(validos[prov]))
+        partido, n = min(falta.items(), key=lambda x: x[1])
+        c = int(votantes_cera.get(prov, 0))
+        filas.append({"prov": prov, "escanos": int(g.diputados.sum()), "aspirante": partido,
+                      "votos_que_faltan": n, "votantes_cera": c,
+                      "ventaja_neta": round(n / c, 3) if c else float("inf")})
+    return pd.DataFrame(filas).sort_values("ventaja_neta").reset_index(drop=True)
