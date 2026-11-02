@@ -77,6 +77,12 @@ su código de Infoelectoral. Las generales con voto exterior van en `GENERALES_I
   anual: un salto de un año que se deshace no es la pandemia. Tasa de fondo: en los años
   sin municipales hay pico de padrón en 5-31 pueblos; en los de municipales, 52-102
   (`picos_por_anyo`, lo imprime `censo pueblos` y lo comprueba un test).
+- `referencia/oce_m2023_altas_no_justificadas.csv`: la lista de la OCE del 4-4-2023
+  (`ine.es/oficina_censo/elecmun2023/elec_mun_2023_municipios_impugnables.xlsx`), 137
+  municipios y 99 entidades menores, con código INE puesto a mano. Es una criba amplia
+  (altas pequeñas en pueblos grandes también): el detector solo ve el 7 % de sus
+  municipios, pero un señalado está en ella el 25 % de las veces frente al 2,8 % de un
+  pueblo cualquiera. Un test exige que sea al menos 5 veces más. No hay lista así de 2019.
 - Padrón: `padron_29005.json` (Tempus, tabla 29005, cifras oficiales a 1 de enero desde 2006).
 - Talarn (academia militar de suboficiales) mueve el CER sin pico de padrón: ya no sale.
 - CERA nuevo del 29-N = CERA de las listas de la OCE − `Censo CERA` de Infoelectoral 2023.

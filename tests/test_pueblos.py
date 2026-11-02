@@ -112,3 +112,23 @@ def test_casos_conocidos_con_datos_reales():
     municipales = fondo[fondo.index.isin([2011, 2015, 2019, 2023])]
     otros = fondo[~fondo.index.isin([2007, 2011, 2015, 2019, 2023])]
     assert municipales.min() >= 3 * otros.median()
+
+
+def test_los_senalados_de_2023_abundan_en_la_lista_de_la_oce():
+    """La OCE publicó el 4-4-2023 las entidades con altas no justificadas en los seis
+    meses previos (referencia/oce_m2023_altas_no_justificadas.csv). Es una criba amplia
+    (también altas pequeñas en pueblos grandes), no una lista de culpables, pero un
+    señalado del detector debe estar en ella muchas más veces que un pueblo cualquiera."""
+    import pytest
+    from pathlib import Path
+    from censo import lectura
+    from censo.fuentes import BRUTOS_INE
+    if not (BRUTOS_INE / "padron_29005.json").exists():
+        pytest.skip("sin datos/brutos (uv run censo descarga)")
+    lista = set(pd.read_csv(Path(__file__).parent.parent / "referencia" / "oce_m2023_altas_no_justificadas.csv",
+                            dtype={"cod": str}).cod)
+    d = pueblos.senala(lectura.censo_panel(), lectura.lee_padron_mun())
+    d = d[d.eleccion == "m2023"]
+    base = d.cod.isin(lista).mean()
+    señalados = d[d.senalado].cod.isin(lista).mean()
+    assert señalados >= 5 * base, (señalados, base)
