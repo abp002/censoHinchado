@@ -64,7 +64,8 @@ def senala(panel: pd.DataFrame) -> pd.DataFrame:
     cere = panel.pivot_table(index="cod", columns="eleccion", values="CERE")
     filas = []
     for m, antes, despues in ventanas():
-        if m not in cer or any(g not in cer for g in despues):
+        despues = [g for g in despues if g in cer]
+        if m not in cer or not despues:
             continue
         g = despues[0]
         d = pd.DataFrame({"cer_antes": cer[antes] if antes in cer else float("nan"), "cer_municipal": cer[m],

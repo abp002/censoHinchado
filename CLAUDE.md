@@ -44,6 +44,8 @@ pasarlos a ese CSV.
   de las listas de votación del 29-N (Oficina del Censo Electoral, censo cerrado el
   1-8-2026; página `ine.es/dyngs/CEL/index.htm?cid=1703`). Se baja solo. Los "números
   definitivos" (`elecgen2026_tab*_def.xlsx`) aún daban 404 el 2026-11-02.
+- `g2026` en el panel: las listas del 29-N por municipio (OCE, `elecgral_2026_lv_tab4.xlsx`,
+  CER y CERA, sin CERE). Ziortza-Bolibar llega sin código de provincia: se hereda.
 - `datos/brutos/infoelectoral/<código>/`: resultados de Interior. **Interior da 403 a
   curl**: se bajan desde el Chrome de Alejandro con `fetch` dentro de la página de
   Infoelectoral y se pasan a un receptor HTTP en 127.0.0.1. Ficheros:
@@ -70,6 +72,10 @@ su código de Infoelectoral. Las generales con voto exterior van en `GENERALES_I
   (Gatón de Campos, Monterde, Huérmeces, La Acebeda, Carcedo, Padrones, Los Ausines).
   Manchones 2015 (condenado) no lo ve ninguna señal: sus altas venían de antes y se
   fueron despacio. La caída a más plazo sola lo vería, pero señala 1.905 pueblos en 2015.
+- **El pico de 2023 está contaminado por la pandemia**: entre nov-2019 y mayo-2023 suben
+  ≥ 8 % 619 pueblos (137 en 2015, 156 en 2019) y muchos vuelven a bajar para 2026.
+  Con `g2026` el pico señala 132 en 2023; lo robusto son los que repiten de otras
+  municipales (`veces` ≥ 2 en `pueblos_senalados.csv`).
 - Falsos positivos: Talarn (academia militar de suboficiales).
 - CERA nuevo del 29-N = CERA de las listas de la OCE − `Censo CERA` de Infoelectoral 2023.
   Los 163.020 con voto suspendido por el Supremo siguen en las listas y no hay cifra

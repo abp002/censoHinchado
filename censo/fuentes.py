@@ -52,6 +52,9 @@ ELECCIONES = [
     Eleccion("g2019n", "2019-11", "cer_33524.csv", CSV.format(33524)),
     Eleccion("m2023", "2023-05", "cer_m2023.csv", CSV.format(59378), "04_202305_1"),
     Eleccion("g2023", "2023-07", "cer_59776.csv", CSV.format(59776)),
+    # Listas de votación del 29-N de la OCE (censo cerrado el 1-8-2026), sin CERE
+    Eleccion("g2026", "2026-11", "oce_g2026_listas_municipios.xlsx",
+             "https://www.ine.es/oficina_censo/elecgen2026/elecgral_2026_lv_tab4.xlsx"),
 ]
 POR_ID = {e.id: e for e in ELECCIONES}
 

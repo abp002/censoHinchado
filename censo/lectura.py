@@ -69,6 +69,8 @@ def lee_eleccion(e: Eleccion) -> pd.DataFrame:
     ruta = BRUTOS_INE / e.fichero
     if ruta.suffix == ".px":
         d = lee_px(ruta.read_text(encoding="latin1"))
+    elif ruta.suffix == ".xlsx":
+        d = lee_oce_municipios(ruta)
     else:
         d = lee_csv(ruta)
     d = d.pivot_table(index="cod", columns="tipo", values="electores", aggfunc="first")
@@ -92,6 +94,23 @@ def lee_pere(ruta: Path = BRUTOS_INE / "pere_71118.json") -> pd.DataFrame:
             if x["Valor"] is not None:
                 filas.append((cod, meta["Municipios"]["Nombre"], x["Anyo"], int(x["Valor"])))
     return pd.DataFrame(filas, columns=["cod", "nombre", "anyo", "pere"])
+
+
+def lee_oce_municipios(ruta: Path) -> pd.DataFrame:
+    """Tabla de la OCE de electores por municipio -> cod, tipo (CER, CERA), electores.
+
+    Columnas: provincia, número de municipio, nombre, residentes en España, en el extranjero, total.
+    Las filas de provincia y de total no traen número de municipio.
+    Alguna fila llega sin código de provincia (Ziortza-Bolibar, 48915, en 2026): se hereda
+    el de la fila anterior, que está en la misma provincia.
+    """
+    h = pd.read_excel(ruta, header=None, engine="calamine")
+    c0 = h.iloc[:, 0].astype(str)
+    prov = c0.where(c0.str.fullmatch(r"\d{1,2}")).ffill()
+    h, prov = h[pd.to_numeric(h.iloc[:, 1], errors="coerce").notna()], prov[pd.to_numeric(h.iloc[:, 1], errors="coerce").notna()]
+    cod = prov.str.zfill(2) + h.iloc[:, 1].astype(float).astype(int).map("{:03d}".format)
+    return pd.concat([pd.DataFrame({"cod": cod.values, "tipo": t, "electores": h.iloc[:, i].astype(int).values})
+                      for t, i in (("CER", 3), ("CERA", 4))], ignore_index=True)
 
 
 def lee_oce_provincias(ruta: Path = BRUTOS_INE / OCE_G2026_FICHERO) -> pd.DataFrame:

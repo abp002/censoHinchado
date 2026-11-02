@@ -40,3 +40,19 @@ def test_tabla_de_provincias_de_la_oce():
     assert d.loc["02", "cer"] == 299_550 and d.loc["02", "cera"] == 8_995
     assert d.loc["52", "cera"] == 6_882
     assert d.cera.sum() == 2_776_645  # el total que trae la propia tabla
+
+
+def test_tabla_de_municipios_de_la_oce_con_datos_reales():
+    import pytest
+    from censo.fuentes import BRUTOS_INE, POR_ID
+    from censo.lectura import lee_oce_municipios
+    ruta = BRUTOS_INE / POR_ID["g2026"].fichero
+    if not ruta.exists():
+        pytest.skip("sin datos/brutos (uv run censo descarga)")
+    d = lee_oce_municipios(ruta).set_index(["cod", "tipo"]).electores
+    assert d["28079", "CER"] == 2_424_110 and d["28079", "CERA"] == 429_670  # Madrid
+    assert d["02001", "CER"] == 640 and d["52001", "CERA"] == 6_882          # Abengibre, Melilla
+    assert d["48915", "CER"] == 315  # Ziortza-Bolibar llega sin código de provincia
+    # sin filas de provincia ni de total: la suma cuadra con el total general de la tabla
+    assert d.xs("CER", level="tipo").sum() == 35_953_542
+    assert d.xs("CERA", level="tipo").sum() == 2_776_645
