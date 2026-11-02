@@ -7,6 +7,12 @@ Dos señales:
   municipal. Encuentra a quien se queda empadronado un tiempo (Gatón de Campos 2015) y
   descarta los pueblos que solo se vacían.
 
+Con el padrón anual del INE se exige además un **pico de padrón**: la población a 1 de
+enero del año de la municipal sube frente al año anterior y baja en uno o dos años. Así
+cae lo que dura más (la gente que llegó en la pandemia y se fue después) y lo que no es
+una alta puntual (Talarn y su academia militar). En los años sin municipales ese pico
+sale en 7-15 pueblos; en los de municipales, en 50-100.
+
 Es una anomalía estadística, no una prueba de fraude: empadronarse donde uno tiene
 casa o familia es legal, y hay falsos positivos conocidos (Talarn, por su academia militar).
 """
@@ -18,6 +24,7 @@ from .fuentes import ELECCIONES
 CAIDA_MIN = 6        # electores
 CAIDA_REL_MIN = 0.08  # sobre el censo de la municipal
 PICO_MIN, PICO_REL_MIN = 6, 0.08  # electores que suben y luego se van
+PADRON_REL_MIN = 0.10  # pico de padrón sobre la población del año de la municipal
 MESES_ANTES = 6  # unas generales a menos de 6 meses comparten cierre de censo con la municipal
 CER_MIN, CER_MAX = 20, 2000  # la OCE solo vigila < 2.000 habitantes; por debajo de 20, ruido
 
@@ -54,11 +61,36 @@ def ventanas() -> list[tuple[str, str | None, list[str]]]:
     return out
 
 
-def senala(panel: pd.DataFrame) -> pd.DataFrame:
+def pico_padron(padron: pd.DataFrame, anyo: int) -> pd.DataFrame:
+    """Por municipio: población a 1 de enero de `anyo` y lo que sube frente al año anterior
+    y se va en uno o dos años (el mínimo de las dos cosas)."""
+    a = padron[anyo]
+    despues = padron[[y for y in (anyo + 1, anyo + 2) if y in padron]].min(axis=1)
+    pico = pd.concat([a - padron[anyo - 1], a - despues], axis=1).min(axis=1)
+    return pd.DataFrame({"pob": a, "pico_padron": pico})
+
+
+def senal_padron(p: pd.DataFrame) -> pd.Series:
+    return (p.pico_padron >= PICO_MIN) & (p.pico_padron / p.pob >= PADRON_REL_MIN)
+
+
+def picos_por_anyo(padron: pd.DataFrame, cer_min=CER_MIN, cer_max=CER_MAX) -> pd.Series:
+    """Pueblos con pico de padrón cada año: los años sin municipales dan la tasa de fondo."""
+    anyos = [y for y in padron.columns if y - 1 in padron and y + 1 in padron]
+    out = {}
+    for y in anyos:
+        p = pico_padron(padron, y)
+        out[y] = int((senal_padron(p) & padron[y - 1].between(cer_min, cer_max)).sum())
+    return pd.Series(out)
+
+
+def senala(panel: pd.DataFrame, padron: pd.DataFrame | None = None) -> pd.DataFrame:
     """panel largo (eleccion, cod, CER, CERE) -> una fila por municipio y municipal.
 
-    exceso: electores de más que se le suponen a la municipal (el mayor de las señales que
-    saltan); cer_base: el censo sin ese exceso.
+    Sin padrón: señalado si salta la caída o el pico del censo. Con padrón: señalado si hay
+    pico de padrón y el censo sube y baja al menos PICO_MIN o cae CAIDA_MIN (sin umbral
+    relativo: el padrón ya filtra el ruido).
+    exceso: electores de más que se le suponen a la municipal; cer_base: el censo sin ellos.
     """
     cer = panel.pivot_table(index="cod", columns="eleccion", values="CER")
     cere = panel.pivot_table(index="cod", columns="eleccion", values="CERE")
@@ -77,8 +109,14 @@ def senala(panel: pd.DataFrame) -> pd.DataFrame:
         d["senal_caida"] = (d.caida >= CAIDA_MIN) & (d.caida_rel >= CAIDA_REL_MIN)
         d["pico"] = pd.concat([d.cer_municipal - d.cer_antes, d.cer_municipal - d.cer_min_despues], axis=1).min(axis=1)
         d["senal_pico"] = (d.pico >= PICO_MIN) & (d.pico / d.cer_municipal >= PICO_REL_MIN)
-        d["senalado"] = d.senal_caida | d.senal_pico
-        d["exceso"] = pd.concat([d.caida.where(d.senal_caida, 0), d.pico.where(d.senal_pico, 0)], axis=1).max(axis=1)
+        if padron is None:
+            d["senalado"] = d.senal_caida | d.senal_pico
+            d["exceso"] = pd.concat([d.caida.where(d.senal_caida, 0), d.pico.where(d.senal_pico, 0)], axis=1).max(axis=1)
+        else:
+            d = d.join(pico_padron(padron, int(m[1:])))
+            d["senal_padron"] = senal_padron(d)
+            d["senalado"] = d.senal_padron & ((d.caida >= CAIDA_MIN) | (d.pico >= PICO_MIN))
+            d["exceso"] = pd.concat([d.caida, d.pico], axis=1).max(axis=1).clip(lower=0).where(d.senalado, 0)
         d["cer_base"] = d.cer_municipal - d.exceso
         filas.append(d.assign(eleccion=m, despues=g).reset_index())
     return pd.concat(filas, ignore_index=True)

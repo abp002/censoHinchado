@@ -17,6 +17,8 @@ PX = "https://www.ine.es/jaxi/files/_px/es/px/t44/{}"
 CSV = "https://www.ine.es/jaxi/files/tpx/es/csv_bdsc/{}.csv"
 INFOE = "https://infoelectoral.interior.gob.es/estaticos/docxl/{}.zip"
 PERE = "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/71118?nult=40&tip=AM"
+# Padrón continuo por municipio a 1 de enero (cifras oficiales), 20 años
+PADRON_MUN = "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/29005?nult=25&tip=AM"
 # Oficina del Censo Electoral: listas de votación (censo cerrado el 1-8-2026) por provincia,
 # electores residentes en España (CER) y en el extranjero (CERA).
 OCE_G2026 = "https://www.ine.es/oficina_censo/elecgen2026/elecgral_2026_lv_tab3.xlsx"
@@ -74,6 +76,7 @@ def descarga_ine(forzar: bool = False) -> None:
         descarga(e.url, BRUTOS_INE / e.fichero, forzar)
     descarga(PERE, BRUTOS_INE / "pere_71118.json", forzar)
     descarga(OCE_G2026, BRUTOS_INE / OCE_G2026_FICHERO, forzar)
+    descarga(PADRON_MUN, BRUTOS_INE / "padron_29005.json", forzar)
 
 
 def faltan_infoelectoral() -> list[str]:

@@ -64,23 +64,51 @@ def test_pico_encuentra_a_quien_se_queda_y_no_al_pueblo_que_se_vacia():
     assert not d.loc["00002", "senalado"] and not d.loc["00003", "senalado"]
 
 
+def test_pico_de_padron_es_un_salto_de_un_año():
+    padron = pd.DataFrame({2014: [168, 100, 100], 2015: [278, 120, 120], 2016: [198, 125, 100],
+                           2017: [168, 124, 99]}, index=["monterde", "llegan_y_se_quedan", "salto_puntual"])
+    p = pueblos.pico_padron(padron, 2015)
+    assert p.loc["monterde", "pico_padron"] == 110         # sube 110 y en dos años se han ido todos
+    assert p.loc["llegan_y_se_quedan", "pico_padron"] < 0  # la pandemia: suben y no bajan
+    assert list(pueblos.senal_padron(p)) == [True, False, True]
+
+
+def test_con_padron_cae_el_censo_que_sube_sin_pico_de_padron():
+    filas = []
+    for cod, serie in {"talarn": (339, 473, 440, 390), "manchones": (124, 127, 117, 103)}.items():
+        for e, v in zip(["g2011", "m2015", "g2015b", "g2019a"], serie):
+            filas.append((e, cod, v, 0))
+    padron = pd.DataFrame({2014: [480, 120], 2015: [470, 140], 2016: [475, 118], 2017: [470, 115]},
+                          index=["talarn", "manchones"])
+    d = pueblos.senala(panel(filas), padron).set_index("cod")
+    assert d.loc["talarn", "senal_pico"] and not d.loc["talarn", "senalado"]   # el padrón no sube
+    assert not d.loc["manchones", "senal_caida"] and d.loc["manchones", "senalado"]  # cae 10 (7,9 %)
+    assert d.loc["manchones", "exceso"] == 10
+
+
 # Casos con respaldo público (OCE, Junta Electoral, juzgado o condena) que el detector debe ver.
 CONOCIDOS = {("m2015", "47070"): "Gatón de Campos", ("m2015", "50173"): "Monterde",
+             ("m2015", "50161"): "Manchones",
              ("m2019", "09172"): "Huérmeces", ("m2019", "28001"): "La Acebeda",
              ("m2023", "09071"): "Carcedo de Bureba", ("m2023", "09244"): "Padrones de Bureba",
              ("m2023", "09030"): "Los Ausines"}
-# Manchones 2015 (condenado): 124 -> 127 -> 117. Sus empadronados venían de antes y
-# se fueron despacio; ninguna señal lo ve sin señalar cientos de pueblos que se vacían.
-NO_LO_VE = {("m2015", "50161")}
+# Talarn: su academia militar de suboficiales mueve el censo sin pico de padrón.
+NO_LO_VE = {("m2015", "25215"), ("m2019", "25215"), ("m2023", "25215")}
 
 
 def test_casos_conocidos_con_datos_reales():
     import pytest
     from censo import lectura
     from censo.fuentes import BRUTOS_INE
-    if not BRUTOS_INE.exists():
+    if not (BRUTOS_INE / "padron_29005.json").exists():
         pytest.skip("sin datos/brutos (uv run censo descarga)")
-    d = pueblos.senala(lectura.censo_panel()).set_index(["eleccion", "cod"])
+    padron = lectura.lee_padron_mun()
+    d = pueblos.senala(lectura.censo_panel(), padron).set_index(["eleccion", "cod"])
     falta = {n for k, n in CONOCIDOS.items() if not d.loc[k, "senalado"]}
     assert not falta, f"el detector ya no ve: {falta}"
     assert not any(d.loc[k, "senalado"] for k in NO_LO_VE)
+    # el pico de padrón es propio de los años de municipales: al menos el triple que el resto
+    fondo = pueblos.picos_por_anyo(padron)
+    municipales = fondo[fondo.index.isin([2011, 2015, 2019, 2023])]
+    otros = fondo[~fondo.index.isin([2007, 2011, 2015, 2019, 2023])]
+    assert municipales.min() >= 3 * otros.median()

@@ -28,7 +28,11 @@ def cmd_descarga(_):
 
 
 def cmd_pueblos(_):
-    s = pueblos.senala(lectura.censo_panel())
+    padron = lectura.lee_padron_mun()
+    fondo = pueblos.picos_por_anyo(padron)
+    print("Pueblos con pico de padrón por año (municipales en 2007, 2011, 2015, 2019, 2023):")
+    print(" ".join(f"{y}:{n}" for y, n in fondo.items()))
+    s = pueblos.senala(lectura.censo_panel(), padron)
     nombres = _nombres()
     sen = s[s.senalado].assign(nombre=lambda d: d.cod.map(nombres))
     veces = sen.groupby("cod").eleccion.transform("count")

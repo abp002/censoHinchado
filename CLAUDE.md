@@ -2,10 +2,11 @@
 
 Anomalías del censo electoral por municipio con datos públicos (INE + Infoelectoral):
 1. **Pueblos**: el censo de residentes (CER) sube para las municipales y cae después.
-   Dos señales: **caída** (frente a las generales siguientes, ≥ 6 y ≥ 8 %) y **pico**
-   (subida frente a las generales anteriores que se deshace antes de la siguiente
-   municipal, ≥ 6 y ≥ 8 %). El pico ve a quien se queda empadronado un tiempo (Gatón de
-   Campos 2015) y es más preciso: en 2019 señala 8 pueblos frente a 34. Se cruza con la diferencia de votos entre 1ª y 2ª lista.
+   Señalado = **pico de padrón** (la población a 1 de enero del año de la municipal sube
+   ≥ 6 y ≥ 10 % frente al año anterior y se va en uno o dos años) **y** el CER sube y baja
+   ≥ 6 (`pico`) o cae ≥ 6 en las generales siguientes (`caida`). Sin padrón, `senala`
+   usa solo las señales del CER (caída y pico con ≥ 8 %), que confunden la pandemia.
+   Se cruza con la diferencia de votos entre 1ª y 2ª lista.
 2. **CERA**: el voto exterior y la ola de la ley de nietos (padrón exterior, PERE), y
    si cambia o puede cambiar escaños del Congreso.
 
@@ -72,10 +73,12 @@ su código de Infoelectoral. Las generales con voto exterior van en `GENERALES_I
   (Gatón de Campos, Monterde, Huérmeces, La Acebeda, Carcedo, Padrones, Los Ausines).
   Manchones 2015 (condenado) no lo ve ninguna señal: sus altas venían de antes y se
   fueron despacio. La caída a más plazo sola lo vería, pero señala 1.905 pueblos en 2015.
-- **El pico de 2023 está contaminado por la pandemia**: entre nov-2019 y mayo-2023 suben
-  ≥ 8 % 619 pueblos (137 en 2015, 156 en 2019) y muchos vuelven a bajar para 2026.
-  Con `g2026` el pico señala 132 en 2023; lo robusto son los que repiten de otras
-  municipales (`veces` ≥ 2 en `pueblos_senalados.csv`).
+- **Por qué el padrón**: el CER solo existe en años de elecciones, y entre nov-2019 y
+  mayo-2023 suben ≥ 8 % 619 pueblos (la pandemia; 137 en 2015, 156 en 2019). El padrón es
+  anual: un salto de un año que se deshace no es la pandemia. Tasa de fondo: en los años
+  sin municipales hay pico de padrón en 5-31 pueblos; en los de municipales, 52-102
+  (`picos_por_anyo`, lo imprime `censo pueblos` y lo comprueba un test).
+- Padrón: `padron_29005.json` (Tempus, tabla 29005, cifras oficiales a 1 de enero desde 2006).
 - Falsos positivos: Talarn (academia militar de suboficiales).
 - CERA nuevo del 29-N = CERA de las listas de la OCE − `Censo CERA` de Infoelectoral 2023.
   Los 163.020 con voto suspendido por el Supremo siguen en las listas y no hay cifra

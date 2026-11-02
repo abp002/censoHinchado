@@ -96,6 +96,18 @@ def lee_pere(ruta: Path = BRUTOS_INE / "pere_71118.json") -> pd.DataFrame:
     return pd.DataFrame(filas, columns=["cod", "nombre", "anyo", "pere"])
 
 
+def lee_padron_mun(ruta: Path = BRUTOS_INE / "padron_29005.json") -> pd.DataFrame:
+    """Padrón por municipio a 1 de enero -> tabla cod x año con la población total."""
+    filas = []
+    for serie in json.loads(ruta.read_text()):
+        meta = {m["T3_Variable"]: m for m in serie["MetaData"]}
+        if meta["Sexo"]["Nombre"] != "Total" or "Municipios" not in meta:
+            continue
+        cod = meta["Municipios"]["Codigo"]
+        filas += [(cod, x["Anyo"], x["Valor"]) for x in serie["Data"] if x["Valor"] is not None]
+    return pd.DataFrame(filas, columns=["cod", "anyo", "pob"]).pivot_table(index="cod", columns="anyo", values="pob")
+
+
 def lee_oce_municipios(ruta: Path) -> pd.DataFrame:
     """Tabla de la OCE de electores por municipio -> cod, tipo (CER, CERA), electores.
 
