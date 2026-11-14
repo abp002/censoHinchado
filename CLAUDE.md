@@ -19,23 +19,31 @@ uv run censo descarga   # INE automático; lista lo que falta de Infoelectoral
 uv run censo pueblos    # salidas/pueblos_senalados.csv, pueblos_margen.csv
 uv run censo cera       # salidas/cera_escanos.csv, cera_ola_municipios.csv, cera_margen_2023_vs_g2026.csv
 uv run censo ensayo     # la noche electoral hacia atrás, 2011-2023: salidas/noche_ensayo.csv
-uv run censo noche r.csv  # 29-N: salidas/noche_pendientes_cera.csv
+uv run censo noche provisionales.json  # 29-N: salidas/noche_pendientes_cera.csv
 uv run pytest -q
 ```
 
 ## Noche del 29-N
 
 El voto CERA no entra en el recuento de la noche: se cuenta en el escrutinio general,
-cinco días después. `censo noche` toma los provisionales en un CSV con columnas
-`prov, candidatura, votos, diputados, validos` (una fila por provincia y candidatura;
-`validos` repetido) y dice qué último escaño puede dar la vuelta el exterior.
+cinco días después. `censo noche` toma los provisionales y dice qué último escaño puede dar la vuelta el exterior.
 `ventaja_neta` = votos que le faltan al aspirante / votantes exteriores esperados
 (CERA del 29-N × participación exterior de 2023, con y sin suspendidos). En el ensayo,
 los dos vuelcos reales (Bizkaia nov-2019, Madrid 2023) quedaron por debajo del 5 % y
 fueron la primera de su elección; con el umbral del 10 % salen 5 provincias en 6
 elecciones y cambian 2. Señala lo que está en juego, no hacia dónde cae.
-El formato de los provisionales de Interior no se conoce hasta esa noche: hay que
-pasarlos a ese CSV.
+
+Los provisionales salen de la web de resultados (`resultados.29neleccionesgenerales.es`,
+con contraseña hasta la noche). Su servidor (`backend-difu`) sirve JSON por ámbito; en
+2023 era así y `censo/provisionales.py` lee ese formato. Paso a paso:
+1. Abrir la web de resultados en el Chrome de Alejandro y ejecutar dentro
+   `herramientas/provisionales.js`: baja las 52 provincias a `~/Downloads/provisionales_HHMM.json`.
+   Si da 404, mirar en la pestaña Red qué `getScopeData` pide al abrir una provincia y
+   ajustar `SUFIJO`.
+2. `uv run censo noche ~/Downloads/provisionales_HHMM.json` (acepta también una carpeta de
+   JSON o el CSV a mano `prov, candidatura, votos, diputados, validos`). Avisa de las
+   provincias sin escrutinio y saca el % escrutado: con poco escrutado no vale.
+Ensayado con 2023 en ese formato: las 52 provincias dan lo mismo que `censo ensayo`.
 
 ## Datos (en `datos/`, ignorado por git)
 

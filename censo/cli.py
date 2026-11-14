@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from . import cera, fuentes, lectura, pueblos
+from . import cera, fuentes, lectura, provisionales, pueblos
 
 SALIDAS = Path(__file__).resolve().parent.parent / "salidas"
 # Ventaja neta dentro del voto exterior por debajo de la cual un escaño está en juego.
@@ -97,11 +97,16 @@ def cmd_ensayo(_):
 
 
 def cmd_noche(a):
-    """Resultados provisionales del 29-N (CSV: prov, candidatura, votos, diputados, validos)."""
+    """Resultados provisionales del 29-N: el JSON (o carpeta de JSON) de la web de Interior
+    que baja herramientas/provisionales.js, o un CSV prov, candidatura, votos, diputados, validos."""
     if not a.fichero:
-        raise SystemExit("uso: censo noche <resultados.csv>")
-    r = pd.read_csv(a.fichero, dtype={"prov": str})
-    r["prov"] = r.prov.str.zfill(2)
+        raise SystemExit("uso: censo noche <provisionales.json | carpeta | resultados.csv>")
+    f = Path(a.fichero)
+    if f.is_dir() or f.suffix == ".json":
+        r = provisionales.lee(f)
+    else:
+        r = pd.read_csv(f, dtype={"prov": str})
+        r["prov"] = r.prov.str.zfill(2)
     validos = r.groupby("prov").validos.first()
     pr, _ = lectura.lee_generales_provincias("02_202307_1")
     part = pr.set_index("prov").pipe(lambda p: p.votantes_cera / p.censo_cera)
@@ -111,6 +116,11 @@ def cmd_noche(a):
     sin = cera.pendientes(r, validos, ((oce.cera - sus) * part).round())
     d = con.merge(sin[["prov", "votantes_cera", "ventaja_neta"]], on="prov", suffixes=("", "_sin_suspendidos"))
     d.insert(1, "provincia", d.prov.map(oce.nombre))
+    if "escrutado" in r:
+        d.insert(2, "escrutado", d.prov.map(r.groupby("prov").escrutado.first()))
+    faltan = sorted(set(oce.index) - set(r.prov))
+    if faltan:
+        print(f"Sin escrutinio todavía: {', '.join(oce.nombre[faltan])}")
     d.to_csv(SALIDAS / "noche_pendientes_cera.csv", index=False)
     print("Último escaño que puede dar la vuelta el voto exterior (escrutinio general, 5 días después):")
     print(d[d.ventaja_neta <= 2 * UMBRAL_EN_JUEGO].to_string(index=False))
