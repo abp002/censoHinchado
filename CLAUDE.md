@@ -36,7 +36,7 @@ elecciones y cambian 2. Señala lo que está en juego, no hacia dónde cae.
 Los provisionales salen de la web de resultados (`resultados.29neleccionesgenerales.es`,
 con contraseña hasta la noche). Su servidor (`backend-difu`) sirve JSON por ámbito; en
 2023 era así y `censo/provisionales.py` lee ese formato. Paso a paso:
-1. Abrir la web de resultados en el Chrome de Alejandro y ejecutar dentro
+1. Abrir la web de resultados en el navegador y ejecutar dentro
    `herramientas/provisionales.js`: baja las 52 provincias a `~/Downloads/provisionales_HHMM.json`.
    Si da 404, mirar en la pestaña Red qué `getScopeData` pide al abrir una provincia y
    ajustar `SUFIJO`.
@@ -56,7 +56,7 @@ Ensayado con 2023 en ese formato: las 52 provincias dan lo mismo que `censo ensa
 - `g2026` en el panel: las listas del 29-N por municipio (OCE, `elecgral_2026_lv_tab4.xlsx`,
   CER y CERA, sin CERE). Ziortza-Bolibar llega sin código de provincia: se hereda.
 - `datos/brutos/infoelectoral/<código>/`: resultados de Interior. **Interior da 403 a
-  curl**: se bajan desde el Chrome de Alejandro con `fetch` dentro de la página de
+  curl**: se bajan desde el navegador con `fetch` dentro de la página de
   Infoelectoral y se pasan a un receptor HTTP en 127.0.0.1. Ficheros:
   `docxl/{02,04}_AAAAMM_1.zip` (por municipio) y `docxl/PROV_02_AAAAMM_1.zip`
   (Congreso por provincia, con el voto CERA dentro).
