@@ -109,7 +109,7 @@ def lee_padron_mun(ruta: Path = BRUTOS_INE / "padron_29005.json") -> pd.DataFram
 
 
 def lee_oce_municipios(ruta: Path) -> pd.DataFrame:
-    """Tabla de la OCE de electores por municipio -> cod, tipo (CER, CERA), electores.
+    """Tabla de la OCE de electores por municipio -> cod, nombre, tipo (CER, CERA), electores.
 
     Columnas: provincia, número de municipio, nombre, residentes en España, en el extranjero, total.
     Las filas de provincia y de total no traen número de municipio.
@@ -121,7 +121,8 @@ def lee_oce_municipios(ruta: Path) -> pd.DataFrame:
     prov = c0.where(c0.str.fullmatch(r"\d{1,2}")).ffill()
     h, prov = h[pd.to_numeric(h.iloc[:, 1], errors="coerce").notna()], prov[pd.to_numeric(h.iloc[:, 1], errors="coerce").notna()]
     cod = prov.str.zfill(2) + h.iloc[:, 1].astype(float).astype(int).map("{:03d}".format)
-    return pd.concat([pd.DataFrame({"cod": cod.values, "tipo": t, "electores": h.iloc[:, i].astype(int).values})
+    nombre = h.iloc[:, 2].astype(str).str.strip().values
+    return pd.concat([pd.DataFrame({"cod": cod.values, "nombre": nombre, "tipo": t, "electores": h.iloc[:, i].astype(int).values})
                       for t, i in (("CER", 3), ("CERA", 4))], ignore_index=True)
 
 

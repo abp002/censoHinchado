@@ -18,6 +18,9 @@ Lo que sale queda en `salidas/`: `pueblos_senalados.csv` y `pueblos_margen.csv` 
 y si el exceso alcanzaba la diferencia de votos), `cera_*.csv` (voto exterior) y
 `noche_ensayo.csv` (la noche electoral hacia atrás, 2011-2023).
 
+Antes de unas municipales, `uv run censo alerta <municipal>` saca los pueblos cuyo censo
+sube por encima de lo que explica su padrón, con lo que ya está publicado antes de votar.
+
 La noche de unas generales, `uv run censo noche <provisionales.json>` dice qué último
 escaño de cada provincia puede dar la vuelta el voto exterior, que se cuenta cinco días
 después. Los provisionales se bajan desde la web de resultados de Interior con

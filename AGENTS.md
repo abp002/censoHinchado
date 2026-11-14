@@ -17,11 +17,25 @@ Se habla siempre de **anomalías estadísticas**, nunca de fraude.
 ```
 uv run censo descarga   # INE automático; lista lo que falta de Infoelectoral
 uv run censo pueblos    # salidas/pueblos_senalados.csv, pueblos_margen.csv
+uv run censo alerta m2027  # antes de votar: salidas/alerta_m2027.csv
 uv run censo cera       # salidas/cera_escanos.csv, cera_ola_municipios.csv, cera_margen_2023_vs_g2026.csv
 uv run censo ensayo     # la noche electoral hacia atrás, 2011-2023: salidas/noche_ensayo.csv
 uv run censo noche provisionales.json  # 29-N: salidas/noche_pendientes_cera.csv
 uv run pytest -q
 ```
+
+## Alerta previa (municipales)
+
+`censo pueblos` confirma el hinchado cuando el censo ya ha caído. `censo alerta <municipal>`
+avisa antes de votar, con lo publicado entonces: el CER de las listas de la municipal
+frente al de las generales anteriores de otro cierre (`anteriores`), menos lo que creció
+el padrón hasta el 1 de enero del año anterior (lo que decrece no se suma). Alerta si
+sobran ≥ 6 electores y ≥ 8 %. Ensayo: 2023 da 167 alertas con los tres casos de Burgos, y
+un 13 % están en la lista de la OCE (2,8 % de base); 2015 y 2019, 54 y 79, con 4 de los 5
+casos conocidos (Manchones no: su censo apenas subió). Los ensayos comparan con generales
+de 3-4 años antes; para mayo de 2027 serán las del 29-N, a unos seis meses: hay que mirar
+si los umbrales siguen valiendo. Para 2027: entrada `m2027` en `ELECCIONES` con la tabla de
+listas por municipio de la OCE (sale hacia abril), y `uv run censo alerta m2027`.
 
 ## Noche del 29-N
 

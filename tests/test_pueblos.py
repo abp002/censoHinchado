@@ -132,3 +132,42 @@ def test_los_senalados_de_2023_abundan_en_la_lista_de_la_oce():
     base = d.cod.isin(lista).mean()
     señalados = d[d.senalado].cod.isin(lista).mean()
     assert señalados >= 5 * base, (señalados, base)
+
+
+def test_alerta_descuenta_lo_que_crece_el_padron_pero_no_lo_que_decrece():
+    i = ["crece", "vacia", "salta"]
+    d = pueblos.alerta(pd.Series([100, 100, 100], i), pd.Series([120, 100, 120], i),
+                       pd.Series([200, 200, 200], i), pd.Series([240, 150, 200], i))
+    assert d.loc["crece", "exceso"] == 0 and not d.loc["crece", "alerta"]  # +20 % de padrón lo explica
+    assert d.loc["vacia", "exceso"] == 0 and not d.loc["vacia", "alerta"]  # no se le suma por vaciarse
+    assert d.loc["salta", "exceso"] == 20 and d.loc["salta", "alerta"]
+
+
+def test_alerta_compara_con_generales_de_otro_cierre_de_censo():
+    assert pueblos.anteriores("m2019") == "g2015b"  # abril de 2019 comparte cierre con mayo
+    assert pueblos.anteriores("m2023") == "g2019n"
+
+
+def test_alerta_previa_con_datos_reales():
+    """Antes de votar en 2023 ya se veían los tres casos de Burgos, y una alerta está en la
+    lista de la OCE muchas más veces que un pueblo cualquiera. Manchones (2015) no se ve:
+    su censo apenas subió, solo cayó después."""
+    import pytest
+    from pathlib import Path
+    from censo import lectura
+    from censo.fuentes import BRUTOS_INE, POR_ID
+    if not (BRUTOS_INE / "padron_29005.json").exists():
+        pytest.skip("sin datos/brutos (uv run censo descarga)")
+    cer = lectura.censo_panel().pivot_table(index="cod", columns="eleccion", values="CER")
+    padron = lectura.lee_padron_mun()
+    vistos = set()
+    for m in ("m2015", "m2019", "m2023"):
+        a = pueblos.anteriores(m)
+        d = pueblos.alerta(cer[a], cer[m], padron[int(POR_ID[a].fecha[:4])], padron[int(m[1:]) - 1])
+        vistos |= {(m, c) for c in d[d.alerta].index}
+    assert set(CONOCIDOS) - vistos == {("m2015", "50161")}
+    lista = set(pd.read_csv(Path(__file__).parent.parent / "referencia" / "oce_m2023_altas_no_justificadas.csv",
+                            dtype={"cod": str}).cod)
+    alertas = [c for m, c in vistos if m == "m2023"]
+    base = d.index.isin(list(lista)).mean()
+    assert pd.Index(alertas).isin(list(lista)).mean() >= 4 * base

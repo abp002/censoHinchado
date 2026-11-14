@@ -1,4 +1,4 @@
-"""censo descarga | pueblos | cera | ensayo | noche <csv> | todo  — escribe los resultados en salidas/."""
+"""censo descarga | pueblos | alerta [m2023] | cera | ensayo | noche <csv> | todo  — escribe los resultados en salidas/."""
 import argparse
 from pathlib import Path
 
@@ -14,8 +14,10 @@ GENERALES_INFOE = ["02_201111_1", "02_201512_1", "02_201606_1", "02_201904_1", "
 
 
 def _nombres() -> pd.Series:
-    p = lectura.lee_pere()
-    return p.drop_duplicates("cod").set_index("cod").nombre
+    """Nombre de cada municipio: el del PERE y, si no está, el de las listas del 29-N."""
+    p = lectura.lee_pere().drop_duplicates("cod").set_index("cod").nombre
+    o = lectura.lee_oce_municipios(fuentes.BRUTOS_INE / fuentes.POR_ID["g2026"].fichero)
+    return p.combine_first(o.drop_duplicates("cod").set_index("cod").nombre)
 
 
 def cmd_descarga(_):
@@ -74,6 +76,26 @@ def cmd_cera(_):
     print("esperados frente al margen del último escaño de 2023 (sin suspendidos: escenario proporcional):")
     print(m.head(10).to_string(index=False))
 
+def cmd_alerta(a):
+    """Antes de una municipal: pueblos cuyo censo sube por encima de su padrón."""
+    m = a.fichero or max((e for e in fuentes.ELECCIONES if e.municipal), key=lambda e: e.fecha).id
+    antes = pueblos.anteriores(m)
+    cer = lectura.censo_panel().pivot_table(index="cod", columns="eleccion", values="CER")
+    padron = lectura.lee_padron_mun()
+    y_antes = int(fuentes.POR_ID[antes].fecha[:4])
+    y_ultimo = min(int(m[1:]) - 1, max(padron.columns))  # lo publicado antes de votar
+    d = pueblos.alerta(cer[antes], cer[m], padron[y_antes], padron[y_ultimo])
+    ret = pueblos.senala(lectura.censo_panel(), padron)
+    previas = ret[ret.senalado & (ret.eleccion < m)].groupby("cod").eleccion.agg(",".join)
+    d = d[d.alerta].drop(columns="alerta").assign(nombre=lambda x: x.index.map(_nombres()),
+                                                    senalado_antes=lambda x: x.index.map(previas))
+    d.index.name = "cod"
+    d.to_csv(SALIDAS / f"alerta_{m}.csv")
+    print(f"{m} frente a {antes} (padrón {y_antes}-{y_ultimo}): {len(d)} pueblos en alerta; "
+          f"{d.senalado_antes.notna().sum()} ya señalados en municipales anteriores")
+    print(d.head(25).to_string())
+
+
 def cmd_ensayo(_):
     """La noche electoral hacia atrás: votos sin CERA de cada generales y su voto exterior real."""
     esc = pd.read_csv(SALIDAS / "cera_escanos.csv", dtype={"prov": str})
@@ -128,12 +150,12 @@ def cmd_noche(a):
 
 def main():
     ap = argparse.ArgumentParser(prog="censo")
-    ap.add_argument("orden", choices=["descarga", "pueblos", "cera", "ensayo", "noche", "todo"])
+    ap.add_argument("orden", choices=["descarga", "pueblos", "alerta", "cera", "ensayo", "noche", "todo"])
     ap.add_argument("fichero", nargs="?")
     a = ap.parse_args()
     SALIDAS.mkdir(exist_ok=True)
     ordenes = {"descarga": [cmd_descarga], "pueblos": [cmd_pueblos], "cera": [cmd_cera],
-               "ensayo": [cmd_ensayo], "noche": [cmd_noche],
+               "alerta": [cmd_alerta], "ensayo": [cmd_ensayo], "noche": [cmd_noche],
                "todo": [cmd_descarga, cmd_pueblos, cmd_cera, cmd_ensayo]}
     for f in ordenes[a.orden]:
         f(a)

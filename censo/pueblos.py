@@ -152,3 +152,35 @@ def decide(senalados: pd.DataFrame, margen: pd.DataFrame) -> pd.DataFrame:
     d["exceso_en_mesa"] = en_mesa.clip(lower=0).combine(d.exceso, min)
     d["pudo_decidir"] = d.exceso_en_mesa >= d.margen
     return d.reset_index()
+
+
+# --- Alerta previa: antes de votar, con las listas de la municipal recién publicadas ---
+ALERTA_MIN, ALERTA_REL_MIN = 6, 0.08
+
+
+def anteriores(municipal: str) -> str | None:
+    """Las generales más recientes a ≥ MESES_ANTES de la municipal."""
+    m = next(e for e in ELECCIONES if e.id == municipal)
+    previas = [g for g in sorted(ELECCIONES, key=lambda e: e.fecha)
+               if not g.municipal and 0 < _mes(m.fecha) - _mes(g.fecha) and _mes(m.fecha) - _mes(g.fecha) >= MESES_ANTES]
+    return previas[-1].id if previas else None
+
+
+def alerta(cer_antes: pd.Series, cer_municipal: pd.Series, pob_antes: pd.Series, pob_ultimo: pd.Series) -> pd.DataFrame:
+    """Pueblos cuyo censo de la municipal sube por encima de lo que explica su padrón.
+
+    Solo usa lo que se sabe antes de votar: el censo de las generales anteriores, el de
+    las listas de la municipal y el padrón publicado (hasta el 1 de enero del año
+    anterior). Lo que crece el padrón se descuenta; lo que decrece no se suma, porque
+    el censo de un pueblo que se vacía no baja al mismo ritmo.
+    exceso: electores por encima de lo esperado.
+    """
+    d = pd.DataFrame({"cer_antes": cer_antes, "cer_municipal": cer_municipal}).dropna()
+    d = d[d.cer_municipal.between(CER_MIN, CER_MAX)]
+    crece = (pob_ultimo / pob_antes - 1).reindex(d.index).fillna(0).clip(lower=0)
+    d["sube"] = d.cer_municipal - d.cer_antes
+    d["crece_padron"] = crece.round(3)
+    d["exceso"] = (d.cer_municipal - d.cer_antes * (1 + crece)).round(1)
+    d["exceso_rel"] = (d.exceso / d.cer_municipal).round(3)
+    d["alerta"] = (d.exceso >= ALERTA_MIN) & (d.exceso_rel >= ALERTA_REL_MIN)
+    return d.sort_values("exceso_rel", ascending=False)
