@@ -1,10 +1,11 @@
-"""censo descarga | pueblos | alerta [m2023] | cera | ensayo | noche <csv> | todo  — escribe los resultados en salidas/."""
+"""censo descarga | pueblos | alerta [m2023] | cera | ensayo | noche <csv> | todo  — escribe los resultados en salidas/.
+censo web [carpeta] monta la página pública (por defecto en _site/) a partir de salidas/."""
 import argparse
 from pathlib import Path
 
 import pandas as pd
 
-from . import cera, fuentes, lectura, provisionales, pueblos
+from . import cera, fuentes, lectura, provisionales, pueblos, web
 
 SALIDAS = Path(__file__).resolve().parent.parent / "salidas"
 # Ventaja neta dentro del voto exterior por debajo de la cual un escaño está en juego.
@@ -148,14 +149,18 @@ def cmd_noche(a):
     print(d[d.ventaja_neta <= 2 * UMBRAL_EN_JUEGO].to_string(index=False))
 
 
+def cmd_web(a):
+    print(web.construye(Path(a.fichero or SALIDAS.parent / "_site")))
+
+
 def main():
     ap = argparse.ArgumentParser(prog="censo")
-    ap.add_argument("orden", choices=["descarga", "pueblos", "alerta", "cera", "ensayo", "noche", "todo"])
+    ap.add_argument("orden", choices=["descarga", "pueblos", "alerta", "cera", "ensayo", "noche", "web", "todo"])
     ap.add_argument("fichero", nargs="?")
     a = ap.parse_args()
     SALIDAS.mkdir(exist_ok=True)
     ordenes = {"descarga": [cmd_descarga], "pueblos": [cmd_pueblos], "cera": [cmd_cera],
-               "alerta": [cmd_alerta], "ensayo": [cmd_ensayo], "noche": [cmd_noche],
+               "alerta": [cmd_alerta], "ensayo": [cmd_ensayo], "noche": [cmd_noche], "web": [cmd_web],
                "todo": [cmd_descarga, cmd_pueblos, cmd_cera, cmd_ensayo]}
     for f in ordenes[a.orden]:
         f(a)

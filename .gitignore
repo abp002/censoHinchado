@@ -2,3 +2,4 @@ datos/
 .venv/
 __pycache__/
 .pytest_cache/
+_site/

@@ -21,6 +21,7 @@ uv run censo alerta m2027  # antes de votar: salidas/alerta_m2027.csv
 uv run censo cera       # salidas/cera_escanos.csv, cera_ola_municipios.csv, cera_margen_2023_vs_g2026.csv
 uv run censo ensayo     # la noche electoral hacia atrás, 2011-2023: salidas/noche_ensayo.csv
 uv run censo noche provisionales.json  # 29-N: salidas/noche_pendientes_cera.csv
+uv run censo web        # la página pública en _site/, a partir de salidas/
 uv run pytest -q
 ```
 
@@ -58,6 +59,20 @@ con contraseña hasta la noche). Su servidor (`backend-difu`) sirve JSON por ám
    JSON o el CSV a mano `prov, candidatura, votos, diputados, validos`). Avisa de las
    provincias sin escrutinio y saca el % escrutado: con poco escrutado no vale.
 Ensayado con 2023 en ese formato: las 52 provincias dan lo mismo que `censo ensayo`.
+
+## Web
+
+<https://alejandroborrego.dev/censoHinchado/> (GitHub Pages; `.github/workflows/pages.yml` la monta y
+publica en cada push a `main`). `censo/web.py` no calcula nada: lee `salidas/*.csv` y `referencia/`,
+rellena la plantilla de `censo/sitio/` (`{{clave}}`) y deja los pueblos en un JSON que pinta `app.js`.
+- Para que cambie la web hay que subir los CSV de `salidas/` regenerados: CI no tiene `datos/`.
+- **La noche de unas generales**: `censo noche <provisionales>` escribe `salidas/noche_pendientes_cera.csv`;
+  con ese fichero subido, la página cambia el aviso por la tabla de escaños pendientes del exterior.
+- `referencia/casos_publicos.csv`: lo publicado sobre un pueblo (cod, municipal, frase, medio, URL), que
+  sale en su ficha y rotula su punto. Cada frase dice solo lo que dice la fuente; un test exige que
+  cada fila sea de un pueblo señalado.
+- `referencia/municipios_coords.csv` y `provincias.json` salen de `herramientas/geografia.py` (es-atlas).
+- Estilo: el de la web de story-shapes (papel, tinta, filetes, Bricolage Grotesque e IBM Plex Mono).
 
 ## Datos (en `datos/`, ignorado por git)
 

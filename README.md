@@ -10,6 +10,9 @@ Ministerio del Interior:
 
 Son anomalías estadísticas, no pruebas de fraude.
 
+**Web: <https://alejandroborrego.dev/censoHinchado/>**, con el mapa de los pueblos señalados en cada
+municipal, la ficha de cada uno y el voto exterior por provincia.
+
 ```
 uv run censo todo
 ```
@@ -25,6 +28,8 @@ La noche de unas generales, `uv run censo noche <provisionales.json>` dice qué 
 escaño de cada provincia puede dar la vuelta el voto exterior, que se cuenta cinco días
 después. Los provisionales se bajan desde la web de resultados de Interior con
 `herramientas/provisionales.js`.
+
+`uv run censo web` monta esa página en `_site/` a partir de `salidas/`; se publica sola al subir a `main`.
 
 ## Fuentes
 
