@@ -173,20 +173,16 @@ def _esc(v) -> str:
 def html_cambios(salidas: Path) -> tuple[str, int]:
     """Los escaños que cambiaron de partido al sumarse el voto exterior."""
     e = _lee(salidas, "cera_escanos.csv")
-    filas = []
+    fichas = []
     for (elec, prov), g in e.groupby(["eleccion", "prov"], sort=False):
         gana = g[g.escanos_con_cera > g.escanos_sin_cera].iloc[0]
         pierde = g[g.escanos_con_cera < g.escanos_sin_cera].iloc[0]
         anyo, mes = elec.split("_")[1][:4], int(elec.split("_")[1][4:])
-        filas.append(
-            f"<tr><td>{_esc(gana.provincia)}</td><td class='mono'>{MESES[mes - 1]} {anyo}</td>"
-            f"<td>{_esc(pierde.candidatura)} → {_esc(gana.candidatura)}</td>"
-            f"<td class='n'>{num(gana.votantes_cera)}</td>"
-            f"<td class='n'>{num(gana.votos_cera)} / {num(pierde.votos_cera)}</td></tr>")
-    tabla = ("<table class='tabla'><thead><tr><th>Provincia</th><th>Generales</th><th>El escaño pasó de</th>"
-             "<th class='n'>Votantes exteriores</th><th class='n'>Votos exteriores (gana / pierde)</th></tr></thead>"
-             f"<tbody>{''.join(filas)}</tbody></table>")
-    return tabla, len(filas)
+        fichas.append(
+            f"<article class='cambio ver'><p class='donde'>{_esc(gana.provincia)} · generales de {MESES[mes - 1]} {anyo}</p>"
+            f"<p class='paso'><s>{_esc(pierde.candidatura)}</s><i>→</i><span>{_esc(gana.candidatura)}</span></p>"
+            f"<p>El último escaño cambió de partido al contarse <b>{num(gana.votantes_cera)}</b> votos del exterior.</p></article>")
+    return f"<div class='cambios'>{''.join(fichas)}</div>", len(fichas)
 
 
 def html_ola(salidas: Path, minimo: float = 0.1) -> tuple[str, dict]:
@@ -203,10 +199,10 @@ def html_ola(salidas: Path, minimo: float = 0.1) -> tuple[str, dict]:
 
     marcas = "".join(f"<span style='left:{pos(t)}%'>×{num(t, 0 if t >= 1 else 1)}</span>" for t in (0.1, 0.5, 1, 2, 5, 10))
     filas = [f"<div class='ola-fila ola-eje'><span></span><div class='ola-pista'>{marcas}</div><span></span></div>"]
-    for r in d.itertuples():
+    for i, r in enumerate(d.itertuples()):
         a, b = pos(r.veces_sin_suspendidos), pos(r.veces_el_margen)
         filas.append(
-            f"<div class='ola-fila'><span class='ola-prov'>{_esc(r.provincia)}</span>"
+            f"<div class='ola-fila' style='--i:{i}'><span class='ola-prov'>{_esc(r.provincia)}</span>"
             f"<div class='ola-pista'><i class='uno' style='left:{pos(1)}%'></i>"
             f"<i class='tramo' style='left:{a}%;width:{round(b - a, 2)}%'></i>"
             f"<i class='punto sin' style='left:{a}%'></i><i class='punto con' style='left:{b}%'></i></div>"
@@ -215,7 +211,7 @@ def html_ola(salidas: Path, minimo: float = 0.1) -> tuple[str, dict]:
         f"<tr><td>{_esc(r.provincia)}</td><td>{_esc(r.partido_mas_cerca)}</td><td class='n'>{num(r.votos_que_faltan)}</td>"
         f"<td class='n'>{num(r.cera_nuevos)}</td><td class='n'>{num(r.votantes_nuevos_esperados)}</td>"
         f"<td class='n'>{num(r.votantes_nuevos_sin_suspendidos)}</td></tr>" for r in d.itertuples())
-    tabla = ("<details class='detalle'><summary>Las cifras de cada provincia</summary><div class='desliza'><table class='tabla'>"
+    tabla = ("<details class='detalle ver'><summary>Las cifras de cada provincia</summary><div class='desliza'><table class='tabla'>"
              "<thead><tr><th>Provincia</th><th>Partido más cerca de otro escaño en 2023</th><th class='n'>Votos que le faltaron</th>"
              "<th class='n'>Electores exteriores nuevos</th><th class='n'>Votantes nuevos esperados</th>"
              "<th class='n'>Sin los suspendidos</th></tr></thead>"
@@ -246,9 +242,8 @@ def html_noche(salidas: Path) -> str:
     """La noche de las generales: lo que deja `censo noche`. Antes de esa noche, un aviso."""
     f = salidas / "noche_pendientes_cera.csv"
     if not f.exists():
-        return ("<p class='aviso'>La noche del 29 de noviembre de 2026, con los resultados provisionales, aquí "
-                "saldrán las provincias cuyo último escaño queda al alcance del voto exterior, que se "
-                "cuenta en el escrutinio general, cinco días después.</p>")
+        return ("<p class='aviso'>Con los resultados provisionales de esa noche, aquí saldrán las provincias cuyo "
+                "último escaño queda al alcance del voto exterior, que se cuenta cinco días después.</p>")
     d = pd.read_csv(f, dtype={"prov": str})
     d = d[d.ventaja_neta <= 2 * UMBRAL_EN_JUEGO].sort_values("ventaja_neta")
     if d.empty:

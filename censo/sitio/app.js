@@ -7,112 +7,183 @@
   const gRotulos = document.getElementById("rotulos");
   const ficha = document.getElementById("ficha");
   const pista = document.getElementById("pista");
-  const cuerpo = document.querySelector("#lista tbody");
+  const cajaAnyos = document.getElementById("anyos");
+  const raya = document.getElementById("raya");
+  const listaCaja = document.getElementById("lista");
   const ANCHO = mapa.viewBox.baseVal.width;
+  const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  let eleccion = D.elecciones[D.elecciones.length - 1];
+  let eleccion = D.elecciones[0];
   let elegido = null;
+  let paseo = null; // el recorrido automático por las municipales al cargar
 
   const num = (v) => (v == null ? "—" : String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, "."));
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const plural = (n, uno, varios) => `${num(n)} ${n === 1 ? uno : varios}`;
   const deEleccion = () => D.pueblos.filter((p) => p.e === eleccion.id);
   const alcanza = (p) => !!(p.res && p.res.alcanza);
-  // Primero los que alcanzan la diferencia; dentro, de más a menos electores de más
   const orden = (a, b) => alcanza(b) - alcanza(a) || b.exceso - a.exceso || a.n.localeCompare(b.n, "es");
 
-  function selector() {
-    const caja = document.getElementById("selector");
-    caja.innerHTML = "";
-    for (const e of D.elecciones) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.setAttribute("aria-pressed", e === eleccion);
-      b.innerHTML = `<span class="anyo">${e.anyo}</span><span class="cuenta">${e.n}</span>`;
-      b.setAttribute("aria-label", `Municipales de ${e.anyo}: ${e.n} pueblos señalados`);
-      b.addEventListener("click", () => { eleccion = e; elegido = null; pinta(); });
-      caja.appendChild(b);
-    }
+  // --- Titular letra a letra ---
+  (function titular() {
+    const h = document.getElementById("titular");
+    const palabras = h.textContent.split(" ");
+    h.setAttribute("aria-label", h.textContent);
+    h.textContent = "";
+    let i = 0;
+    palabras.forEach((palabra, k) => {
+      const p = document.createElement("span");
+      p.className = "p";
+      p.setAttribute("aria-hidden", "true");
+      for (const letra of palabra) {
+        const l = document.createElement("span");
+        l.className = "l";
+        l.textContent = letra;
+        l.style.animationDelay = `${i++ * 22}ms`;
+        p.appendChild(l);
+      }
+      h.appendChild(p);
+      if (k < palabras.length - 1) h.appendChild(document.createTextNode(" "));
+    });
+  })();
+
+  // --- El mapa se dibuja provincia a provincia, de norte a sur ---
+  document.querySelectorAll(".provincias path").forEach((p) => {
+    const b = p.getBBox();
+    p.style.animationDelay = `${Math.round((b.y + b.x * 0.35) * 0.9)}ms`;
+  });
+
+  // --- Números que cuentan ---
+  const cuentas = new WeakMap();
+  function cuenta(el, hasta) {
+    cancelAnimationFrame(cuentas.get(el));
+    const desde = parseInt(el.textContent.replace(/\D/g, ""), 10) || 0;
+    if (quieto || desde === hasta) { el.textContent = num(hasta); return; }
+    const dur = 600;
+    let t0 = null;
+    const paso = (t) => {
+      if (t0 === null) t0 = t;
+      const k = Math.min(1, (t - t0) / dur);
+      el.textContent = num(desde + (hasta - desde) * (1 - Math.pow(1 - k, 3)));
+      if (k < 1) cuentas.set(el, requestAnimationFrame(paso));
+    };
+    cuentas.set(el, requestAnimationFrame(paso));
   }
 
-  // Un píxel de pantalla en unidades del mapa: los puntos no encogen en el móvil
+  // --- Años ---
+  for (const e of D.elecciones) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = e.anyo;
+    b.setAttribute("aria-label", `Municipales de ${e.anyo}: ${e.n} pueblos señalados`);
+    b.addEventListener("click", () => { paraPaseo(); cambia(e); });
+    cajaAnyos.insertBefore(b, raya);
+  }
+  function marcaAnyo() {
+    [...cajaAnyos.querySelectorAll("button")].forEach((b, i) => {
+      const activo = D.elecciones[i] === eleccion;
+      b.setAttribute("aria-pressed", activo);
+      if (activo) {
+        raya.style.width = b.offsetWidth + "px";
+        raya.style.transform = `translateX(${b.offsetLeft}px)`;
+      }
+    });
+  }
+
+  // --- Puntos ---
   const px = () => ANCHO / (mapa.getBoundingClientRect().width || ANCHO);
   const radio = (p, k) => Math.max(4, 1.9 * Math.sqrt(p.exceso)) * Math.min(k, 2.2);
 
-  function puntos() {
+  function puntos(entrada) {
     const k = px();
     gPuntos.innerHTML = "";
-    gRotulos.innerHTML = "";
     const lista = deEleccion().sort((a, b) => b.exceso - a.exceso);
+    // Entran de norte a sur
+    const retraso = new Map([...lista].sort((a, b) => a.y - b.y).map((p, i) => [p, i * 14]));
     for (const p of lista) {
-      const c = document.createElementNS(SVG, "circle");
-      c.setAttribute("cx", p.x);
-      c.setAttribute("cy", p.y);
-      c.setAttribute("r", radio(p, k).toFixed(1));
-      if (alcanza(p)) c.classList.add("alcanza");
-      if (p === elegido) c.classList.add("elegido");
-      c.addEventListener("click", () => elige(p, true));
-      c.addEventListener("pointerenter", (ev) => muestraPista(p, ev));
-      c.addEventListener("pointermove", muevePista);
-      c.addEventListener("pointerleave", () => { pista.hidden = true; });
-      gPuntos.appendChild(c);
+      const g = document.createElementNS(SVG, "g");
+      if (alcanza(p)) g.classList.add("alcanza");
+      if (p === elegido) g.classList.add("elegido");
+      const r = radio(p, k).toFixed(1);
+      for (const clase of ["onda", "p"]) {
+        const c = document.createElementNS(SVG, "circle");
+        c.setAttribute("class", clase);
+        c.setAttribute("cx", p.x);
+        c.setAttribute("cy", p.y);
+        c.setAttribute("r", r);
+        if (clase === "p") c.style.animationDelay = entrada ? `${retraso.get(p)}ms` : "-1s";
+        g.appendChild(c);
+      }
+      g.addEventListener("click", () => { paraPaseo(); elige(p); });
+      g.addEventListener("pointerenter", (ev) => muestraPista(p, ev));
+      g.addEventListener("pointermove", muevePista);
+      g.addEventListener("pointerleave", () => { pista.hidden = true; });
+      g.dataset.cod = p.cod;
+      gPuntos.appendChild(g);
     }
     const arriba = gPuntos.querySelector(".elegido");
-    if (arriba) gPuntos.appendChild(arriba); // el elegido, encima
-    // Rótulos: los pueblos con algo publicado y el elegido; si dos se pisan, el de abajo baja
-    const alto = 13 * Math.min(k, 2.2);
-    const rotulos = lista.filter((p) => p.casos || p === elegido).map((p) => {
+    if (arriba) gPuntos.appendChild(arriba);
+    rotulos(k);
+  }
+
+  // Rótulos: los pueblos con algo publicado y el elegido; si dos se pisan, el de abajo baja
+  function rotulos(k) {
+    gRotulos.innerHTML = "";
+    const alto = 14 * Math.min(k, 2.2);
+    const rs = deEleccion().filter((p) => p.casos || p === elegido).map((p) => {
       const izq = p.x > ANCHO * 0.72;
-      const d = radio(p, k) + 5 * k;
+      const d = radio(p, k) + 6 * k;
       return { p, izq, x: p.x + (izq ? -d : d), y: p.y + 4 * k };
     }).sort((a, b) => a.y - b.y);
-    rotulos.forEach((r, i) => {
-      for (const o of rotulos.slice(0, i)) {
-        if (o.izq === r.izq && Math.abs(o.x - r.x) < 160 * k && r.y - o.y < alto) r.y = o.y + alto;
+    rs.forEach((r, i) => {
+      for (const o of rs.slice(0, i)) {
+        if (o.izq === r.izq && Math.abs(o.x - r.x) < 170 * k && r.y - o.y < alto) r.y = o.y + alto;
       }
       const t = document.createElementNS(SVG, "text");
       t.setAttribute("x", r.x.toFixed(1));
       t.setAttribute("y", r.y.toFixed(1));
       t.setAttribute("text-anchor", r.izq ? "end" : "start");
-      t.setAttribute("font-size", (12 * Math.min(k, 2.2)).toFixed(1));
-      if (r.p === elegido) t.setAttribute("font-weight", "500");
+      t.setAttribute("font-size", (12.5 * Math.min(k, 2.2)).toFixed(1));
+      if (r.p !== elegido) t.setAttribute("fill-opacity", "0.6");
       t.textContent = r.p.n;
       gRotulos.appendChild(t);
     });
   }
 
   function muestraPista(p, ev) {
+    if (ev.pointerType === "touch") return;
     const r = p.res;
     pista.innerHTML = `<b>${esc(p.n)}</b>${plural(p.exceso, "elector", "electores")} de más` +
-      (r ? `<br>diferencia de ${plural(r.margen, "voto", "votos")}` : "");
+      (r && r.segundo != null ? ` · diferencia de ${plural(r.margen, "voto", "votos")}` : "");
     pista.hidden = false;
     muevePista(ev);
   }
   function muevePista(ev) {
-    const w = pista.offsetWidth;
-    pista.style.left = Math.min(ev.clientX + 14, window.innerWidth - w - 8) + "px";
+    pista.style.left = Math.min(ev.clientX + 14, window.innerWidth - pista.offsetWidth - 8) + "px";
     pista.style.top = ev.clientY + 16 + "px";
   }
 
+  // --- Ficha ---
   function grafica(p) {
     const pasos = [];
-    if (p.antes != null) pasos.push(["Generales", eleccion.antes, p.antes]);
+    if (p.antes != null) pasos.push(["Antes", eleccion.antes, p.antes]);
     pasos.push(["Municipales", eleccion.fecha, p.mun]);
-    pasos.push(["Generales", eleccion.despues, p.desp]);
-    const W = 340, H = 168, arriba = 30, abajo = 44, lado = 46;
+    pasos.push(["Después", eleccion.despues, p.desp]);
+    const W = 360, H = 132, arriba = 26, abajo = 38, lado = 42;
     const vs = pasos.map((s) => s[2]);
-    const min = Math.min(...vs), max = Math.max(...vs);
+    const min = Math.min(...vs, p.mun - p.exceso), max = Math.max(...vs);
     const y = (v) => arriba + (H - arriba - abajo) * (1 - (v - min) / (max - min || 1));
     const x = (i) => lado + (i * (W - 2 * lado)) / (pasos.length - 1);
+    const pts = pasos.map((q, i) => `${x(i)},${y(q[2])}`).join(" ");
     let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Censo de residentes: ${vs.join(", ")}">`;
-    s += `<line class="base" x1="0" x2="${W}" y1="${H - abajo + 8}" y2="${H - abajo + 8}"/>`;
-    s += `<polyline class="linea" points="${pasos.map((q, i) => `${x(i)},${y(q[2])}`).join(" ")}"/>`;
+    s += `<polygon class="zona" points="${pts} ${x(pasos.length - 1)},${H - abajo + 6} ${x(0)},${H - abajo + 6}"/>`;
+    s += `<polyline class="linea" pathLength="1" points="${pts}"/>`;
     pasos.forEach((q, i) => {
       const pico = q[0] === "Municipales";
-      s += `<circle${pico ? ' class="pico"' : ""} cx="${x(i)}" cy="${y(q[2])}" r="${pico ? 5.5 : 4.5}"/>`;
-      s += `<text class="valor" x="${x(i)}" y="${y(q[2]) - 12}" text-anchor="middle">${num(q[2])}</text>`;
-      s += `<text x="${x(i)}" y="${H - 18}" text-anchor="middle">${q[0]}</text>`;
-      s += `<text x="${x(i)}" y="${H - 3}" text-anchor="middle">${esc(q[1])}</text>`;
+      s += `<circle${pico ? ' class="pico"' : ""} cx="${x(i)}" cy="${y(q[2])}" r="${pico ? 5 : 4}"/>`;
+      s += `<text class="valor" x="${x(i)}" y="${y(q[2]) - 11}" text-anchor="middle">${num(q[2])}</text>`;
+      s += `<text x="${x(i)}" y="${H - 14}" text-anchor="middle">${q[0]}</text>`;
+      s += `<text x="${x(i)}" y="${H}" text-anchor="middle">${esc(q[1])}</text>`;
     });
     return s + "</svg>";
   }
@@ -120,95 +191,108 @@
   function pintaFicha() {
     const p = elegido;
     if (!p) { ficha.innerHTML = ""; return; }
-    let h = `<span class="kicker">${esc(p.p)} · Municipales de ${eleccion.anyo}</span><h3>${esc(p.n)}</h3>`;
-    h += `<div><span class="kicker">Censo de residentes</span>${grafica(p)}</div>`;
-    h += `<p><strong>${plural(p.exceso, "elector", "electores")} de más</strong> en la municipal. ` +
-      `El padrón del pueblo, de ${plural(p.pob, "habitante", "habitantes")} ese 1 de enero, ` +
-      `tenía ${num(p.padron)} que no estaban el año anterior y dejaron de estar en uno o dos años.</p>`;
     const r = p.res;
+    let h = `<p class="donde">${esc(p.p)} · municipales de ${eleccion.anyo} · censo de residentes</p><h2>${esc(p.n)}</h2>`;
+    h += grafica(p);
+    h += `<div class="cifras"><div><b>${num(p.exceso)}</b><span>electores de más</span></div>`;
     if (r) {
-      if (r.segundo == null) {
-        h += `<p>Solo hubo una lista: ${esc(r.gana)}, con ${plural(r.v1, "voto", "votos")}.</p>`;
-      } else if (r.margen === 0) {
-        h += `<p>Las dos primeras listas, ${esc(r.gana)} y ${esc(r.segundo)}, <strong>empataron a ${plural(r.v1, "voto", "votos")}</strong>.</p>`;
-      } else {
-        h += `<p>Ganó ${esc(r.gana)} con ${plural(r.v1, "voto", "votos")}; la segunda lista, ${esc(r.segundo)}, tuvo ${num(r.v2)}: ` +
-          `<strong>${plural(r.margen, "voto", "votos")} de diferencia</strong>.</p>`;
-      }
-      h += `<p>De los ${num(p.exceso)} de más, <strong>${r.mesa === p.exceso ? "todos seguían" : r.mesa === 1 ? "1 seguía" : num(r.mesa) + " seguían"}</strong> en el censo de la mesa el día de votar.</p>`;
-      if (r.segundo != null) {
-        h += r.alcanza
-          ? `<div class="veredicto alcanza">El exceso alcanza la diferencia de votos</div>`
-          : `<div class="veredicto">El exceso no alcanza la diferencia de votos</div>`;
-      }
+      h += `<div><b>${num(r.mesa)}</b><span>seguían en la mesa al votar</span></div>`;
+      h += r.segundo == null
+        ? `<div><b>1</b><span>sola lista</span></div>`
+        : `<div><b>${num(r.margen)}</b><span>${r.margen === 1 ? "voto" : "votos"} entre ${esc(r.gana)} y ${esc(r.segundo)}</span></div>`;
     } else {
-      h += `<div class="veredicto">Sin cruzar con el resultado de ${eleccion.anyo}</div>`;
+      h += `<div><b>${num(p.padron)}</b><span>habitantes de más en el padrón</span></div>`;
+    }
+    h += `</div>`;
+    if (r && r.segundo != null) {
+      h += r.alcanza
+        ? `<p class="veredicto alcanza">Los que seguían en la mesa alcanzan la diferencia de votos.</p>`
+        : `<p class="veredicto">Los que seguían en la mesa no alcanzan la diferencia de votos.</p>`;
+    } else if (!r) {
+      h += `<p class="veredicto">Sin cruzar con el resultado de ${eleccion.anyo}.</p>`;
     }
     if (p.oce || p.casos) {
-      h += `<div class="publicado"><span class="kicker">Lo publicado</span>`;
-      for (const c of p.casos || []) {
-        h += `<p>${esc(c.texto)} <a href="${esc(c.url)}">${esc(c.medio)}</a></p>`;
-      }
+      h += `<div class="publicado">`;
+      for (const c of p.casos || []) h += `<p>${esc(c.texto)} <a href="${esc(c.url)}">${esc(c.medio)}</a></p>`;
       if (p.oce) {
-        h += `<p>${p.oce === "municipio" ? "Está" : "Una entidad menor del municipio está"} en la lista de altas sin justificar de la Oficina del Censo Electoral de abril de 2023. <a href="${esc(D.oce.url)}">INE</a></p>`;
+        h += `<p>${p.oce === "municipio" ? "Está" : "Una entidad menor del municipio está"} en la lista de altas sin justificar de la Oficina del Censo Electoral de 2023. <a href="${esc(D.oce.url)}">INE</a></p>`;
       }
       h += `</div>`;
     }
-    if (p.otras.length) {
-      h += `<p class="mono" style="font-size:13px">También señalado en ${p.otras.join(", ")}.</p>`;
-    }
-    h += `<p class="mono" style="font-size:12px;color:var(--faint)">Anomalía estadística: no dice quién se empadronó ni por qué.</p>`;
     ficha.innerHTML = h;
   }
 
+  // --- Lista ---
   function lista() {
-    const ps = deEleccion().sort(orden);
-    document.getElementById("lista-titulo").textContent = `Municipales de ${eleccion.anyo}: ${eleccion.n} pueblos`;
-    document.getElementById("lista-nota").textContent = eleccion.resultados
-      ? `En ${eleccion.alcanzan}, el exceso alcanza la diferencia de votos`
-      : "Sin cruzar con resultados";
-    cuerpo.innerHTML = "";
-    for (const p of ps) {
-      const tr = document.createElement("tr");
-      tr.tabIndex = 0;
-      tr.setAttribute("aria-selected", p === elegido);
-      if (alcanza(p)) tr.className = "si";
-      const r = p.res;
-      const dif = !r ? "—" : r.segundo == null ? "una lista" : r.margen === 0 ? "empate" : num(r.margen);
-      tr.innerHTML = `<td><i class="marca${alcanza(p) ? " alcanza" : ""}"></i>${esc(p.n)}${p.casos ? '<span class="fuente">publicado</span>' : ""}</td><td>${esc(p.p)}</td>` +
-        `<td class="n">${num(p.antes)}</td><td class="n">${num(p.mun)}</td><td class="n">${num(p.desp)}</td>` +
-        `<td class="n">${num(p.exceso)}</td><td class="n">${r ? num(r.mesa) : "—"}</td><td class="n">${dif}</td>`;
-      tr.addEventListener("click", () => elige(p, false));
-      tr.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); elige(p, false); }
+    document.getElementById("lista-titulo").textContent = `Los ${eleccion.n} pueblos de ${eleccion.anyo}`;
+    listaCaja.innerHTML = "";
+    for (const p of deEleccion().sort(orden)) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.cod = p.cod;
+      b.setAttribute("aria-pressed", p === elegido);
+      b.innerHTML = `<i class="marca${alcanza(p) ? " alcanza" : ""}"></i>` +
+        `<span class="quien">${esc(p.n)}<small>${esc(p.p)}</small></span><span class="cuanto">+${num(p.exceso)}</span>`;
+      b.addEventListener("click", () => {
+        paraPaseo();
+        elige(p);
+        document.getElementById("pueblos").scrollIntoView({ behavior: quieto ? "auto" : "smooth" });
       });
-      tr.dataset.cod = p.cod;
-      cuerpo.appendChild(tr);
+      listaCaja.appendChild(b);
     }
   }
 
-  function elige(p, desdeMapa) {
+  function elige(p) {
     elegido = p;
-    puntos();
+    for (const g of gPuntos.children) g.classList.toggle("elegido", g.dataset.cod === p.cod);
+    const arriba = gPuntos.querySelector(".elegido");
+    if (arriba) gPuntos.appendChild(arriba);
+    rotulos(px());
     pintaFicha();
-    for (const tr of cuerpo.children) tr.setAttribute("aria-selected", tr.dataset.cod === p.cod);
-    if (desdeMapa) {
-      const tr = cuerpo.querySelector(`[data-cod="${p.cod}"]`);
-      const caja = tr && tr.closest(".desliza");
-      if (caja) caja.scrollTop = tr.offsetTop - caja.clientHeight / 2;
-    }
+    for (const b of listaCaja.children) b.setAttribute("aria-pressed", b.dataset.cod === p.cod);
   }
 
-  function pinta() {
+  function cambia(e) {
+    eleccion = e;
     const ps = deEleccion().sort(orden);
-    elegido = elegido || ps.find((p) => p.casos) || ps[0];
-    selector();
-    puntos();
-    pintaFicha();
-    lista();
+    elegido = ps.find((p) => p.casos) || ps[0];
+    marcaAnyo();
+    cuenta(document.getElementById("n-pueblos"), e.n);
+    document.getElementById("alcanzan-caja").hidden = !e.resultados;
+    if (e.resultados) cuenta(document.getElementById("n-alcanzan"), e.alcanzan);
+    gPuntos.classList.add("se-va");
+    setTimeout(() => {
+      gPuntos.classList.remove("se-va");
+      puntos(true);
+      pintaFicha();
+      lista();
+    }, gPuntos.childElementCount && !quieto ? 220 : 0);
   }
+
+  // Al cargar recorre las municipales de la primera a la última; cualquier clic lo para
+  function paraPaseo() { clearTimeout(paseo); paseo = null; }
+  function pasea(i) {
+    cambia(D.elecciones[i]);
+    if (i < D.elecciones.length - 1) paseo = setTimeout(() => pasea(i + 1), 1500);
+  }
+
+  // --- Lo de más abajo aparece al llegar ---
+  const mira = new IntersectionObserver((es) => {
+    for (const e of es) if (e.isIntersecting) { e.target.classList.add("visto"); mira.unobserve(e.target); }
+  }, { threshold: 0.2 });
+  document.querySelectorAll(".ver, .ola, .cambio").forEach((el) => mira.observe(el));
+  document.querySelectorAll(".ola").forEach((o) => {
+    const pista0 = o.querySelector(".ola-pista");
+    if (pista0) o.style.setProperty("--ancho-pista", pista0.offsetWidth + "px");
+  });
 
   let espera;
-  window.addEventListener("resize", () => { clearTimeout(espera); espera = setTimeout(puntos, 120); });
-  pinta();
+  window.addEventListener("resize", () => {
+    clearTimeout(espera);
+    espera = setTimeout(() => { puntos(false); marcaAnyo(); }, 120);
+  });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(marcaAnyo);
+
+  if (quieto) cambia(D.elecciones[D.elecciones.length - 1]);
+  else setTimeout(() => pasea(0), 900);
 })();

@@ -3,145 +3,100 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>censoHinchado: anomalías del censo electoral</title>
+<title>censoHinchado: el censo que sube para votar</title>
 <meta name="description" content="Pueblos cuyo censo sube para las municipales y cae después, y el peso del voto exterior en los escaños del Congreso. Con datos públicos del INE y del Ministerio del Interior.">
+<meta name="theme-color" content="#16130f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="wrap top">
+<header class="top">
   <a class="brand" href="./">censoHinchado</a>
   <nav>
-    <a href="#pueblos">Pueblos</a>
     <a href="#exterior">Voto exterior</a>
     <a href="#metodo">Método</a>
     <a href="https://github.com/abp002/censoHinchado">Código</a>
   </nav>
 </header>
 
-<main class="wrap">
-  <div class="intro">
-    <h1>Dos anomalías del censo electoral</h1>
-    <p class="lede">Pueblos que ganan electores justo antes de unas municipales y los pierden después, y el peso del voto exterior en los escaños del Congreso. Medido con datos públicos del INE y del Ministerio del Interior. Son anomalías estadísticas, no pruebas de fraude: empadronarse donde uno tiene casa o familia es legal.</p>
-  </div>
-
-  <div class="result">
-    <div>
-      <span class="kicker">Pueblos</span>
-      <span class="big">{{total}}</span>
-      <p>veces queda señalado un pueblo en las {{n_elecciones}} municipales de {{primera}} a {{ultima}}. En {{alcanzan}} de las {{con_resultados}} cruzadas con resultados, el exceso que seguía en el censo de la mesa alcanzaba la diferencia de votos entre la primera y la segunda lista.</p>
+<main>
+  <section class="hero" id="pueblos">
+    <div class="panel">
+      <h1 id="titular">El censo que sube para votar</h1>
+      <p class="entrada">Pueblos que ganan electores justo antes de unas municipales y los pierden después. Son anomalías estadísticas, no pruebas de fraude.</p>
+      <div class="anyos" id="anyos" role="group" aria-label="Municipales"><i class="raya" id="raya"></i></div>
+      <p class="cuenta"><b id="n-pueblos">0</b> pueblos señalados<span id="alcanzan-caja"> · en <b id="n-alcanzan">0</b>, los electores de más alcanzan la diferencia de votos</span></p>
+      <div class="ficha" id="ficha" aria-live="polite"></div>
     </div>
-    <div>
-      <span class="kicker">Voto exterior</span>
-      <span class="big">{{n_cambios}}</span>
-      <p>escaños del Congreso cambiaron de partido al contarse el voto de los residentes en el extranjero entre 2011 y 2023. Para el 29 de noviembre de 2026 hay {{cera_nuevos}} electores exteriores más que en 2023.</p>
-    </div>
-  </div>
-
-  <section id="pueblos">
-    <div class="cabecera">
-      <h2>Pueblos cuyo censo sube para las municipales</h2>
-      <p class="lede">Un pueblo queda señalado cuando pasan dos cosas a la vez. Su padrón a 1 de enero da un salto el año de las municipales, de al menos 6 habitantes y un 10 %, que se deshace en uno o dos años. Y su censo electoral de residentes sube y vuelve a bajar al menos 6 electores. Solo se miran los pueblos de 20 a 2.000 electores.</p>
-    </div>
-
-    <div class="selector" id="selector" role="group" aria-label="Municipales"></div>
-
-    <div class="tablero">
-      <figure class="mapa">
-        <svg id="mapa" viewBox="0 0 {{mapa_ancho}} {{mapa_alto}}" role="img" aria-label="Mapa de España con los pueblos señalados">
-          <g class="provincias">{{provincias}}</g>
-          <path class="recuadro" d="{{recuadro}}"/>
-          <g id="puntos"></g>
-          <g id="rotulos"></g>
-        </svg>
-        <figcaption class="legend">
-          <span><i class="marca alcanza"></i>El exceso alcanza la diferencia de votos</span>
-          <span><i class="marca"></i>Señalado</span>
-          <span><i class="marca grande"></i>Tamaño: electores de más</span>
-          <span><b>Nombre</b>: hay algo publicado</span>
-        </figcaption>
-      </figure>
-      <aside class="ficha" id="ficha" aria-live="polite"></aside>
-    </div>
-
-    <div class="lista">
-      <div class="lista-cabecera">
-        <h3 id="lista-titulo"></h3>
-        <p class="mono muted" id="lista-nota"></p>
-      </div>
-      <div class="desliza">
-        <table class="tabla" id="lista">
-          <thead><tr>
-            <th>Pueblo</th><th>Provincia</th><th class="n">Censo antes</th><th class="n">En la municipal</th><th class="n">Después</th>
-            <th class="n">De más</th><th class="n">Seguían en la mesa</th><th class="n">Diferencia 1.ª–2.ª</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="dos">
-      <div>
-        <h3>Frente a la lista oficial de 2023</h3>
-        <p>La Oficina del Censo Electoral publicó en abril de 2023 los <a href="{{oce_url}}">{{oce_municipios}} municipios con altas sin justificar</a>. Es una criba más ancha que esta: incluye altas pequeñas en pueblos grandes. De los {{n_2023}} señalados aquí en 2023, {{oce_senalados}} están en esa lista (el {{oce_senalados_pct}} %); un pueblo cualquiera de ese tamaño está en ella el 2,8 % de las veces.</p>
-      </div>
-      <div>
-        <h3>Antes de votar</h3>
-        <p>Lo de arriba se confirma cuando el censo ya ha caído. Con lo publicado antes de la votación (las listas de la municipal, las generales anteriores y el padrón), el ensayo de 2023 da {{alerta_n}} pueblos en alerta, y {{alerta_oce}} están en la lista oficial (el {{alerta_pct}} %). La alerta de las municipales de mayo de 2027 saldrá aquí cuando se publiquen las listas, hacia abril.</p>
-      </div>
-    </div>
+    <figure class="mapa">
+      <svg id="mapa" viewBox="0 0 {{mapa_ancho}} {{mapa_alto}}" role="img" aria-label="Mapa de España con los pueblos señalados">
+        <g class="provincias">{{provincias}}</g>
+        <path class="recuadro" d="{{recuadro}}"/>
+        <g id="puntos"></g>
+        <g id="rotulos"></g>
+      </svg>
+      <figcaption>
+        <span><i class="marca alcanza"></i>Alcanza la diferencia de votos</span>
+        <span><i class="marca"></i>Señalado</span>
+        <span>El tamaño son los electores de más</span>
+      </figcaption>
+    </figure>
   </section>
 
-  <section id="exterior">
-    <div class="cabecera">
-      <h2>El voto exterior y los escaños del Congreso</h2>
-      <p class="lede">El voto de los españoles residentes en el extranjero (CERA) no se cuenta la noche electoral: entra en el escrutinio general, cinco días después. Casi nunca cambia nada. Estas son las veces que sí.</p>
-    </div>
-    <div class="desliza">{{cambios}}</div>
-    <p class="nota">Reparto D'Hondt de cada provincia con y sin el voto exterior, generales de 2011 a 2023. El cálculo reproduce el reparto oficial en todas las provincias.</p>
+  <section class="ancho lista-caja ver">
+    <details id="lista-caja">
+      <summary><span id="lista-titulo"></span></summary>
+      <div class="lista" id="lista"></div>
+    </details>
+  </section>
+
+  <section class="ancho" id="exterior">
+    <h2 class="ver">El voto exterior decide tarde</h2>
+    <p class="entrada ver">El voto de los españoles que viven fuera no se cuenta la noche electoral, sino cinco días después. Casi nunca cambia nada. Entre 2011 y 2023 cambió {{n_cambios}} escaños.</p>
+    {{cambios}}
 
     <div class="bloque">
-      <h3>La ley de nietos frente al último escaño</h3>
-      <p>Las listas de votación del 29 de noviembre traen {{cera_total}} electores exteriores, {{cera_nuevos}} más que en julio de 2023. Si votan como votó el exterior en 2023, ¿cuántos votantes nuevos hay por cada voto que le faltó al partido que se quedó a las puertas del último escaño? Por encima de ×1, los votantes nuevos superan ese margen: pasa en {{ola_sobre}} provincias.</p>
-      <div class="legend">
+      <h3 class="ver">La ley de nietos frente al último escaño</h3>
+      <p class="entrada ver">El 29 de noviembre hay <b>{{cera_nuevos}}</b> electores exteriores más que en 2023. Por cada voto que le faltó al partido que rozó el último escaño, estos son los votantes nuevos que se esperan. A la derecha de la línea, superan ese margen.</p>
+      <div class="leyenda ver">
         <span><i class="punto con"></i>Con todos los inscritos</span>
-        <span><i class="punto sin"></i>Sin los {{suspendidos}} con el voto suspendido</span>
+        <span><i class="punto sin"></i>Sin los {{suspendidos}} con el voto suspendido por el Supremo</span>
       </div>
       {{ola}}
-      <p class="nota">El Tribunal Supremo suspendió de forma cautelar el voto de {{suspendidos}} inscritos. No hay cifra oficial por provincia: aquí se reparten en proporción a los electores que ha ganado cada una, y es un escenario, no un dato. Los votantes nuevos no votan en bloque: la cifra dice dónde hay margen, no hacia dónde cae.</p>
+      <p class="nota ver">Los suspendidos no tienen cifra oficial por provincia: se reparten en proporción y es un escenario, no un dato. Dice dónde hay margen, no hacia dónde cae.</p>
     </div>
 
     <div class="bloque">
-      <h3>La noche electoral</h3>
-      <p>Con los resultados provisionales se puede saber qué último escaño queda al alcance del voto exterior: los votos que le faltan al aspirante, divididos entre los votantes exteriores esperados, dan la ventaja que necesitaría dentro de ese voto. En el ensayo con las {{ens_elecciones}} generales de 2011 a 2023, por debajo del {{umbral}} % salen {{ens_senaladas}} provincias y cambiaron {{ens_cambiaron}}.</p>
-      {{ensayo}}
-      <h4>29 de noviembre de 2026</h4>
-      {{noche}}
+      <h3 class="ver">La noche del 29 de noviembre</h3>
+      <div class="ver">{{noche}}</div>
+      <details class="detalle ver">
+        <summary>El ensayo con las generales de 2011 a 2023</summary>
+        <p class="nota">Provincias donde al aspirante al último escaño le bastaba menos de un {{umbral}} % de ventaja dentro del voto exterior: {{ens_senaladas}}, y cambiaron {{ens_cambiaron}}.</p>
+        {{ensayo}}
+      </details>
     </div>
   </section>
 
-  <section id="metodo">
-    <div class="cabecera">
-      <h2>Método y límites</h2>
+  <section class="ancho" id="metodo">
+    <h2 class="ver">Cómo se mide</h2>
+    <ol class="pasos">
+      <li class="ver"><b>El padrón da un salto.</b> El año de las municipales sube al menos 6 habitantes y un 10 %, y se deshace en uno o dos años.</li>
+      <li class="ver"><b>El censo sube y baja.</b> Al menos 6 electores de más en la municipal que ya no están en las generales siguientes.</li>
+      <li class="ver"><b>Se compara con el resultado.</b> Cuentan los electores de más que seguían en la mesa el día de votar, frente a la diferencia entre las dos primeras listas.</li>
+    </ol>
+    <div class="limites">
+      <p class="ver"><b>Qué no ve.</b> Altas pequeñas en pueblos medianos y a quien se empadrona y se queda. De los <a href="{{oce_url}}">{{oce_municipios}} municipios</a> que señaló la Oficina del Censo Electoral en 2023, aquí salen {{oce_vistos}}.</p>
+      <p class="ver"><b>Qué no dice.</b> Un pico puede venir de una obra, una residencia o vecinos que vuelven a votar a su pueblo. Estar señalado no dice quién se empadronó ni por qué.</p>
+      <p class="ver"><b>De dónde sale.</b> Censo electoral, padrón y Oficina del Censo Electoral (INE) y resultados del Ministerio del Interior. Mapa de <a href="https://github.com/martgnz/es-atlas">es-atlas</a> (IGN, CC BY 4.0). El <a href="https://github.com/abp002/censoHinchado">código</a> es abierto.</p>
     </div>
-    <dl class="metodo">
-      <div><dt>Qué se compara</dt><dd>El censo electoral de residentes (CER) de cada municipal con el de las generales anteriores y siguientes, y el padrón anual a 1 de enero. El censo solo existe en años de elecciones; el padrón, todos los años, y es lo que separa una alta puntual de un pueblo que crece.</dd></div>
-      <div><dt>Por qué el padrón</dt><dd>En los años sin municipales, el salto de padrón que se deshace aparece en entre 5 y 31 pueblos. En los años de municipales, en entre 52 y 102. Con el censo solo, la llegada de gente en la pandemia inflaba 2023.</dd></div>
-      <div><dt>Los electores de más</dt><dd>Lo que el censo sube y vuelve a bajar. Para compararlo con el resultado cuenta solo la parte que seguía en el censo de la mesa el día de votar: si la Oficina del Censo Electoral excluyó esas altas antes, no pudieron votar.</dd></div>
-      <div><dt>Qué no ve</dt><dd>Altas pequeñas en pueblos medianos, entidades menores dentro de un municipio y a quien se empadrona y se queda. De los {{oce_municipios}} municipios de la lista oficial de 2023 solo ve {{oce_vistos}} (el {{oce_vistos_pct}} %).</dd></div>
-      <div><dt>Falsos positivos</dt><dd>Un pico puede tener una causa corriente: una obra, una residencia, temporeros, vecinos que vuelven a votar a su pueblo. Estar señalado no dice quién se empadronó ni por qué. Lo que sí hay publicado sobre un pueblo va enlazado en su ficha.</dd></div>
-      <div><dt>2007</dt><dd>Entre las municipales de 2007 y las generales de 2008 pasan diez meses y no hay generales anteriores con las que comparar, así que es el año con más ruido. No está cruzado con resultados.</dd></div>
-      <div><dt>Fuentes</dt><dd>INE: censo electoral por municipio, padrón continuo, padrón de residentes en el extranjero y Oficina del Censo Electoral. Ministerio del Interior: resultados de Infoelectoral. Mapa: <a href="https://github.com/martgnz/es-atlas">es-atlas</a>, con datos del Instituto Geográfico Nacional (CC BY 4.0).</dd></div>
-      <div><dt>Reproducirlo</dt><dd>El código y los resultados en CSV están en <a href="https://github.com/abp002/censoHinchado">github.com/abp002/censoHinchado</a>, con licencia MIT. Esta página sale de esos CSV con un comando.</dd></div>
-    </dl>
   </section>
 </main>
 
-<footer class="wrap pie">
+<footer class="pie">
   <span>Hecho por <a href="https://alejandroborrego.dev">Alejandro Borrego</a></span>
-  <span class="mono">Datos del INE y del Ministerio del Interior</span>
+  <span>Datos del INE y del Ministerio del Interior</span>
 </footer>
 
 <div id="pista" class="pista" hidden></div>

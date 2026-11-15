@@ -72,7 +72,8 @@ rellena la plantilla de `censo/sitio/` (`{{clave}}`) y deja los pueblos en un JS
   sale en su ficha y rotula su punto. Cada frase dice solo lo que dice la fuente; un test exige que
   cada fila sea de un pueblo señalado.
 - `referencia/municipios_coords.csv` y `provincias.json` salen de `herramientas/geografia.py` (es-atlas).
-- Estilo: el de la web de story-shapes (papel, tinta, filetes, Bricolage Grotesque e IBM Plex Mono).
+- Estilo: oscuro cálido, el mapa de portada a pantalla completa, Newsreader en titulares, Inter y
+  JetBrains Mono; animaciones en CSS y `app.js` sin librerías (se apagan con `prefers-reduced-motion`).
 
 ## Datos (en `datos/`, ignorado por git)
 

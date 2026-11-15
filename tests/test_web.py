@@ -71,7 +71,7 @@ def test_construye_la_pagina_entera(tmp_path):
     assert len(datos["pueblos"]) == len(pd.read_csv(SALIDAS / "pueblos_senalados.csv"))
     assert not re.search(r"\bnan\b", pagina, re.I)
     assert (tmp_path / "app.js").exists() and (tmp_path / "style.css").exists()
-    assert "29 de noviembre" in pagina  # sin provisionales, el aviso de la noche
+    assert "resultados provisionales de esa noche" in pagina  # sin provisionales, el aviso
 
 
 def test_la_noche_ensena_los_escanos_pendientes(tmp_path):
